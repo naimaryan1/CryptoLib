@@ -16,6 +16,7 @@
 */
 
 #include "shared_util.h"
+#include "crypto_structs.h"
 
 //temp debug, remove later.
 #include <string.h>
@@ -41,7 +42,8 @@ char * c_read_file(const char * f_name, long * f_size) {
         fseek (f, 0, SEEK_END);
         length = ftell (f);
         fseek (f, 0, SEEK_SET);
-        buffer = malloc (length);
+        //buffer = malloc (length);
+        buffer = malloc(TM_SIZE);
         if (buffer) {
             fread (buffer, 1, length, f);
         }
