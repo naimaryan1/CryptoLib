@@ -2,6 +2,7 @@
 vgcore*
 core
 *.so
+*.dat
 build
 venv
 
