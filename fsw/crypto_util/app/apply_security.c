@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
     debug_printf("Applied Security buffer size int:%d\n",buffer_size_i);
     debug_printf("File content: \n");
     debug_hexprintf(buffer,buffer_size_i);
-
+    debug_printf("About to free buffer in apply security.\n");
     free(buffer);
+    debug_printf("Freed the buffer in apply security.\n");
 }

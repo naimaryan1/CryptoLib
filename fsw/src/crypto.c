@@ -102,6 +102,7 @@ static int32 Crypto_PDU(char* ingest);
 */
 // Security
 static SecurityAssociation_t sa[NUM_SA];
+SecurityAssociation_t *pSA = &sa;
 static crypto_key_t ek_ring[NUM_KEYS];
 //static crypto_key_t ak_ring[NUM_KEYS];
 // Local Frames
@@ -144,7 +145,7 @@ static int32 Crypto_SA_init(void)
         sa[x].ecs[1] = 0;
         sa[x].ecs[2] = 0;
         sa[x].ecs[3] = 0;
-        sa[x].iv_len = IV_SIZE;
+        sa[x].iv_len = IV_SIZE;  // John.. this true?
         sa[x].acs_len = 0;
         sa[x].acs = 0;
         sa[x].arc_len = 0;
@@ -570,6 +571,7 @@ static int32 Crypto_SA_config(void)
         sa[1].sa_state = SA_OPERATIONAL;
         sa[1].est = 0;
         sa[1].ast = 0;
+        sa[1].iv_len = 0; // TEST, this line didn't exist
         sa[1].arc_len = 1;
         sa[1].arcw_len = 1;
         sa[1].arcw[0] = 5;
@@ -615,7 +617,8 @@ static int32 Crypto_SA_config(void)
         sa[3].arc_len = (sa[3].arcw[0] * 2) + 1;
         // SA 4 - KEYED;  ARCW:5; AES-GCM; IV:00...00; IV-len:12; MAC-len:16; Key-ID: 130
         sa[4].ekid = 130;
-        sa[4].sa_state = SA_KEYED;
+        //sa[4].sa_state = SA_KEYED;
+        sa[4].sa_state = SA_OPERATIONAL;
         sa[4].est = 1; 
         sa[4].ast = 1;
         sa[4].shivf_len = 12;
@@ -2632,7 +2635,7 @@ static int32 Crypto_PDU(char* ingest)
             OS_printf(KMAG "CCSDS message put on software bus: 0x" RESET);
             for (int x = 0; x < status; x++)
             {
-                OS_printf(KMAG "%02x" RESET, x, (uint8) ingest[x]);
+                OS_printf(KMAG "%02x " RESET, (uint8) ingest[x]);
             }
             OS_printf("\n");
         }
@@ -2641,45 +2644,365 @@ static int32 Crypto_PDU(char* ingest)
     return status;
 }
 
+// Believe that, per protocol, this should accept an entire (partially completed) frame
+// Refernece 3550b1 Figure 2-4
+// Reference 3550b1 Section 3
+// 3.2.2.3
+/*
+**The portion of the TC Transfer Frame contained in the TC ApplySecurity Payload
+parameter includes the Security Header field. When the ApplySecurity Function is
+called, the Security Header field is empty; i.e., the caller has not set any values in the
+Security Header.
+*/
 int32 Crypto_TC_ApplySecurity(char** ingest, int* len_ingest)
 {
     // Local Variables
     int32 status = OS_SUCCESS;
-    unsigned char* tc_ingest = *ingest;
+    unsigned char* tc_ingest = *ingest; // ptr to original buffer
 
     #ifdef DEBUG
         OS_printf(KYEL "\n----- Crypto_TC_ApplySecurity START -----\n" RESET);
     #endif
 
-    // TODO: This whole function!
-    //len_ingest = len_ingest;
-    //ingest[0] = ingest[0];
+    #ifdef DEBUG
+        // OS_printf("Printing TF Header....\n");
+        OS_printf("TF Bytes received\n");
+        OS_printf("DEBUG - ");
+        for(int i=0; i <*len_ingest; i++)
+        {
+            OS_printf("%02X", ((uint8 *)&*tc_ingest)[i]);
+        }
+        OS_printf("\nPrinted %d bytes\n", *len_ingest);
+    #endif
 
-    int security_header_bytes = 18;
-    int security_trailer_bytes = 16;
-    int tc_size = *len_ingest + security_header_bytes + security_trailer_bytes;
+    TC_FramePrimaryHeader_t temp_tc_header;
+    
+    // Primary Header
+    temp_tc_header.tfvn   = ((uint8)tc_ingest[0] & 0xC0) >> 6;
+    temp_tc_header.bypass = ((uint8)tc_ingest[0] & 0x20) >> 5;
+    temp_tc_header.cc     = ((uint8)tc_ingest[0] & 0x10) >> 4;
+    temp_tc_header.spare  = ((uint8)tc_ingest[0] & 0x0C) >> 2;
+    temp_tc_header.scid   = ((uint8)tc_ingest[0] & 0x03) << 8;
+    temp_tc_header.scid   = tc_frame.tc_header.scid | (uint8)tc_ingest[1];
+    temp_tc_header.vcid   = ((uint8)tc_ingest[2] & 0xFC) >> 2;
+    temp_tc_header.fl     = ((uint8)tc_ingest[2] & 0x03) << 8;
+    temp_tc_header.fl     = tc_frame.tc_header.fl | (uint8)tc_ingest[3];
+    temp_tc_header.fsn	  = (uint8)tc_ingest[4];
 
-    unsigned char * tempTC=NULL;
-    tempTC = (unsigned char *)malloc(tc_size * sizeof (unsigned char));
-    CFE_PSP_MemSet(tempTC, 0, tc_size);
-
-    int count = 0;
-    //Create Security Header
-    for (;count < security_header_bytes;count++){
-        tempTC[count]= 0x55; //put dummy filler bits in security header for now.
+    // Check if command frame flag set
+    if (temp_tc_header.cc == 1)
+    {
+        /*
+        ** CCSDS 232.0-B-3
+        ** Section 6.3.1
+        ** "Type-C frames do not have the Security Header and Security Trailer."
+        */
+        #ifdef TC_DEBUG
+            OS_printf(KYEL "DEBUG - Received Control/Command frame - nothing to do.\n" RESET);
+        #endif
     }
 
-    //Create Frame Body
-    CFE_PSP_MemCpy(&tempTC[security_header_bytes],&tc_ingest[0],*len_ingest);
-    count+=*len_ingest;
+    // TODO: If command frame flag not set, need to know SDLS parameters
+    // What is the best way to do this - copy in the entire SA for a channel?
+    // Will need to know lengths of various parameters from the SA DB
+    else
+    {
+        // Get Security Parameter Index
+        // SPI comes after TF Header and Secondary Header
+        // uint8 spi_index = TC_FRAME_PRIMARYHEADER_SIZE + 1;
+        // Use the index to get the SPI value
+        // uint16_t spi = ((uint16_t) (tc_ingest[spi_index] << 8)) | tc_ingest[spi_index+1];
 
-    //Create Security Trailer
-    for(;count < tc_size;count++){
-        tempTC[count]=0x55; //put dummy filler bits in security trailer for now.
+        // ***TODO: Likely need API calls to the SA instead of what is above
+        // The ingest * we will receive will not have SDLS headers, we need a way
+        // to query the SA with gvcid_tc_blk information and receive the SA back
+        // Expect these calls will return an error is the SA is not usable
+
+        /*
+        ** So, is that as simple as getting the operational SA?
+        */
+
+        // Query SA DB for active SA / SDLS paremeters
+        // TODO: Likely API call
+        // Consider making one call to pull the parameters, or individual API calls
+        // TODO: Magic to make sure we're getting the correct SA.. \
+        // currently SA DB allows for more than one
+        SecurityAssociation_t temp_SA;
+        int16_t spi = -1;
+        for (int i=0; i < NUM_SA;i++)
+        {
+            if (sa[i].sa_state == SA_OPERATIONAL)
+            {
+                spi = i;
+                //break; // Needs modified 
+            }
+        }
+
+        // If no active SA found
+        if (spi == -1)
+        {
+            OS_printf(KRED "Error: No operational SA found! \n" RESET);
+            status = OS_ERROR;
+        }
+        // Found an active SA
+        else
+        {
+            CFE_PSP_MemCpy(&temp_SA, &(sa[spi]), SA_SIZE);
+            #ifdef TC_DEBUG
+                OS_printf("Operational SA found at index %d.\n", spi);
+            #endif
+        }
+
+        #ifdef TC_DEBUG
+            OS_printf(KYEL "DEBUG - Received data frame.\n" RESET);
+            OS_printf("Using SA 0x%04X settings.\n", spi);
+        #endif
+
+        // Verify SCID 
+        if ((temp_tc_header.scid != temp_SA.gvcid_tc_blk[temp_tc_header.vcid].scid) \
+            && (status == OS_SUCCESS))
+        {
+            OS_printf(KRED "Error: SCID incorrect! \n" RESET);
+            status = OS_ERROR;
+        }
+
+        #ifdef TC_DEBUG
+            OS_printf(KYEL "DEBUG - Printing local copy of SA Entry for current SPI.\n" RESET);
+            Crypto_saPrint(&temp_SA);
+        #endif
+
+        // Verify SA SPI configurations
+        // Check if SA is operational
+        if ((temp_SA.sa_state != SA_OPERATIONAL) && (status == OS_SUCCESS))
+        {
+            OS_printf(KRED "Error: SA is not operational! \n" RESET);
+            status = OS_ERROR;
+        }
+        // Check if this VCID exists / is mapped to TCs
+        if ((temp_SA.gvcid_tc_blk[temp_tc_header.vcid].mapid != TYPE_TC) && (status = OS_SUCCESS))
+        {	
+            OS_printf(KRED "Error: SA does not map this VCID to TC! \n" RESET);
+            status = OS_ERROR;
+        }
+
+        // If a check is invalid so far, can return
+        if (status != OS_SUCCESS)
+        {
+            return status;
+        }
+
+        // int tc_size = *len_ingest;// + security_header_bytes;
+
+        // unsigned char * tempTC=NULL;
+        // tempTC = (unsigned char *)malloc(tc_size * sizeof (unsigned char));
+        // CFE_PSP_MemSet(tempTC, 0, tc_size);
+
+        // Copy input frame into temp TC frame
+        // CFE_PSP_MemCpy(&tempTC[0],&tc_ingest[0],*len_ingest);
+
+        // OS_printf("Debug Frame security header size is:  %d\n",TC_FRAME_SECHEADER_SIZE);
+
+        //Fill Security Header
+        // for (int count = 0; count < TC_FRAME_SECHEADER_SIZE; count++){
+            // tempTC[TC_FRAME_PRIMARYHEADER_SIZE + count] = 0x55;
+        // }
+
+        //Fill Security Trailer
+        // for(int count = 0; count < TC_FRAME_SECTRAILER_SIZE; count++){
+        //     tempTC[*len_ingest - TC_FRAME_SECTRAILER_SIZE - TC_FRAME_FECF_SIZE + count] = 0xDE; //put dummy filler bits in security trailer for now.
+        // }
+
+        // *ingest = tempTC;
+        // *len_ingest = tc_size;
+
+        // Copy back into input frame
+        // CFE_PSP_MemCpy(*ingest[0],&tempTC[0],*len_ingest);
+
+        #ifdef SEC_FILL_DEBUG
+            OS_printf("TF Bytes after security head/trail filled\n");
+            OS_printf("DEBUG - ");
+            for(int i=0; i <*len_ingest; i++)
+            {
+                OS_printf("%02X", ((uint8 *)ingest)[i]);
+            }
+            OS_printf("\nPrinted %d bytes\n", *len_ingest);
+        #endif
+
+        // Determine mode
+        // Clear
+        if ((temp_SA.est == 0) && (temp_SA.ast == 0))
+        {
+            #ifdef DEBUG
+                OS_printf(KBLU "Creating a TC - CLEAR! \n" RESET);
+                OS_printf("TC Bytes Output: ");
+                for(int i=0; i <*len_ingest; i++)
+                {
+                    OS_printf("%02X", ((uint8 *)&*tc_ingest)[i]);
+                }
+                OS_printf("\nPrinted %d bytes\n", *len_ingest);
+            #endif
+            // TODO
+
+            }
+        // Authentication
+        else if ((temp_SA.est == 0) && (temp_SA.ast == 1))
+        {
+            #ifdef DEBUG
+                OS_printf(KBLU "Creating a TC - AUTHENTICATED! \n" RESET);
+            #endif
+            // TODO
+        }
+        // Encryption
+        else if ((temp_SA.est == 1) && (temp_SA.ast == 0))
+        {
+            #ifdef DEBUG
+                OS_printf(KBLU "Creating a TC - ENCRYPTED! \n" RESET);
+            #endif
+            // TODO
+        }
+        // Authenticated Encryption
+        else if((temp_SA.est == 1) && (temp_SA.ast == 1))
+        {
+            #ifdef DEBUG
+                OS_printf(KBLU "Creating a TC - AUTHENTICATED ENCRYPTION! \n" RESET);
+            #endif
+
+            // Total length of buffer to be malloced
+            // Ingest length + segment header (1) + spi_index (2) + shivf_len (varies) + shsnf_len (varies) \
+            // + shplf_len + arc_len + pad_size + stmacf_len 
+            uint16 tc_buf_length = *len_ingest + 1 + 2 + temp_SA.shivf_len + temp_SA.shsnf_len + \
+            temp_SA.shplf_len + temp_SA.arc_len + TC_PAD_SIZE + temp_SA.stmacf_len ;
+
+            #ifdef TC_DEBUG
+                OS_printf(KYEL "DEBUG - Total TC Buffer to be malloced is: %d bytes\n" RESET, tc_buf_length);
+                OS_printf(KYEL "\tlen of TF\t = %d\n" RESET, *len_ingest);
+                OS_printf(KYEL "\tsegment hdr\t = 1\n" RESET);
+                OS_printf(KYEL "\tspi len\t\t = 2\n" RESET);
+                OS_printf(KYEL "\tshivf_len\t = %d\n" RESET, temp_SA.shivf_len);
+                OS_printf(KYEL "\tshsnf_len\t = %d\n" RESET, temp_SA.shsnf_len);
+                OS_printf(KYEL "\tshplf len\t = %d\n" RESET, temp_SA.shplf_len);
+                OS_printf(KYEL "\tarc_len\t\t = %d\n" RESET, temp_SA.arc_len);
+                OS_printf(KYEL "\tpad_size\t = %d\n" RESET, TC_PAD_SIZE);
+                OS_printf(KYEL "\tstmacf_len\t = %d\n" RESET, temp_SA.stmacf_len);
+            #endif 
+
+            // Accio buffer
+            unsigned char * ptc_enc_buf;
+            ptc_enc_buf = (unsigned char *)malloc(tc_buf_length * sizeof (unsigned char));
+            CFE_PSP_MemSet(ptc_enc_buf, 0, tc_buf_length);
+
+            // Copy original TF header
+            CFE_PSP_MemCpy(ptc_enc_buf, &*tc_ingest, TC_FRAME_PRIMARYHEADER_SIZE);
+            // Set new TF Header length
+            // Recall: Length field is one minus total length per spec
+            *(ptc_enc_buf+2) = ((*(ptc_enc_buf+2) & 0xFC) | (((tc_buf_length -1) & (0x0300)) >> 8));
+            *(ptc_enc_buf+3) = ((tc_buf_length -1) & (0x00FF));
+
+            #ifdef TC_DEBUG
+                OS_printf(KYEL "Printing updated TF Header:\n\t");
+                for (int i=0; i<TC_FRAME_PRIMARYHEADER_SIZE; i++)
+                {
+                    OS_printf("%02X", *(ptc_enc_buf+i));
+                }
+                // Recall: The buffer length is 1 greater than the field value set in the TCTF
+                OS_printf("\n\tNew length is 0x%02X\n", tc_buf_length-1);
+                OS_printf(RESET);
+            #endif
+
+            /*
+            ** Start variable length fields
+            */
+
+            uint16_t index = TC_FRAME_PRIMARYHEADER_SIZE;
+            // Set Secondary Header flags
+            *(ptc_enc_buf + index) = 0xFF;
+            index++;
+
+            /*
+            ** Begin Security Header Fields
+            ** Reference CCSDS SDLP 3550b1 4.1.1.1.3
+            */
+            // Set SPI
+            *(ptc_enc_buf + index) = ((spi & 0xFF00) >> 8);
+            *(ptc_enc_buf + index + 1) = (spi & 0x00FF);
+            index += 2;
+            // Set Initialization Vector
+            for (int i=0; i < temp_SA.shivf_len; i++)
+            {
+                // Temp fill IV
+                *(ptc_enc_buf + index) = 0x55;
+                index++;
+            }
+            // Set Sequence Number
+            // TODO: Revisit wrt the note below
+            // TODO: RESOLVE difference in arc_len and SN
+            /*
+            ** Note: For systems which implement authenticated encryption using a simple
+            ** incrementing counter as an initialization vector (i.e., as in counter-mode
+            ** cryptographic algorithms), the Initialization Vector field of the Security Header
+            ** may serve also as the Sequence Number. In this case, the Sequence Number
+            ** field in the Security Header is zero octets in length.
+            ^^ Reference: CCSDS SDLP 3550b1 4.1.1.4.2
+            */
+            //for (int i=0; i < temp_SA.shsnf_len; i++)
+            for (int i=0; i < temp_SA.arc_len; i++)
+            {
+                // Temp fill SN
+                *(ptc_enc_buf + index) = 0x66;
+                index++;
+            }
+            // Set Pad Length
+            // TODO TC_PAD_SIZE should probably be copied into the SA DB definition... right?
+            //for (int i=0; i < temp_SA.shplf_len; i++)
+            for (int i=0; i < TC_PAD_SIZE; i++)
+            {
+                // Temp fill PL
+                *(ptc_enc_buf + index) = 0x77;
+                index++;
+            }
+
+            // Copy in original TF data  -- except FECF
+            // TODO: Need to know presence/absence of FECF represented
+            // Recall: Frame length is set to length-1 per spec
+            uint16_t original_data_len = (temp_tc_header.fl + 1) - TC_FRAME_PRIMARYHEADER_SIZE - TC_FRAME_FECF_SIZE;
+            for(int i=0; i<original_data_len; i++)
+            {
+                *(ptc_enc_buf + index) = tc_ingest[TC_FRAME_PRIMARYHEADER_SIZE + i];
+                index++;
+            }
+
+            // Set MAC Field
+            for (int i=0; i < temp_SA.stmacf_len; i++)
+            {
+                // Temp fill MAC
+                *(ptc_enc_buf + index) = 0x88;
+                index++;
+            }
+
+            // Set FECF Field
+            // TODO: Determine is FECF is even present
+            // on this particular channel
+            // TODO: Determine if needs recalculated
+            for (int i=0; i < TC_FRAME_FECF_SIZE; i++)
+            {
+                // Copy over old FECF
+                *(ptc_enc_buf + index) = tc_ingest[*len_ingest - (TC_FRAME_FECF_SIZE - i)];
+                index++;
+            }
+
+            OS_printf(KRED "FINAL INDEX IS %d\n" RESET, index);
+
+            #ifdef TC_DEBUG
+                OS_printf(KYEL "Printing new TC Frame:\n\t");
+                for(int i=0; i < tc_buf_length; i++)
+                {
+                    OS_printf("%02X", *(ptc_enc_buf + i));
+                }
+                OS_printf("\n" RESET);
+            #endif
+
+        }
     }
-
-    *ingest = tempTC;
-    *len_ingest = tc_size;
 
     #ifdef DEBUG
         OS_printf(KYEL "----- Crypto_TC_ApplySecurity END -----\n" RESET);
@@ -2699,7 +3022,13 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest)
     gcry_error_t gcry_error = GPG_ERR_NO_ERROR;
 
     #ifdef DEBUG
+        int len_ingest_i = *len_ingest;
         OS_printf(KYEL "\n----- Crypto_TC_ProcessSecurity START -----\n" RESET);
+        OS_printf("Printing entire TC buffer:\n");
+        for (int i=0; i < len_ingest_i; i++){
+            OS_printf("%02X", (uint8)*(ingest+i));
+        }
+        OS_printf("\n");
     #endif
 
     // Primary Header
@@ -2910,8 +3239,8 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest)
         x = x + MAC_SIZE;
 
         // FECF
-        tc_frame.tc_sec_trailer.fecf = ((uint8)ingest[x] << 8) | ((uint8)ingest[x+1]);
-        Crypto_FECF(tc_frame.tc_sec_trailer.fecf, ingest, (tc_frame.tc_header.fl - 2));
+        tc_frame.tc_fecf.fecf = ((uint8)ingest[x] << 8) | ((uint8)ingest[x+1]);
+        Crypto_FECF(tc_frame.tc_fecf.fecf, ingest, (tc_frame.tc_header.fl - 2));
 
         // Initialize the key
         //itc_gcm128_init(&sa[tc_frame.tc_sec_header.spi].gcm_ctx, (const unsigned char*) &ek_ring[sa[tc_frame.tc_sec_header.spi].ekid]);
@@ -3038,17 +3367,40 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest)
             OS_printf(KBLU "CLEAR TC Received!\n" RESET);
         #endif
 
+        // #ifdef TC_DEBUG
+        //     uint8 sa_iv_len = sa[tc_frame.tc_sec_header.spi].iv_len; // John - shivf, or iv_len?
+        //     OS_printf("Fetching IV Size: %d\n", sa_iv_len); 
+        //     if (sa_iv_len > 0){
+        //         OS_printf("Printing IV: \n");
+        //         for (int i = 0; i < sa[tc_frame.tc_sec_header.spi].iv_len; i++)
+        //         {
+        //             OS_printf("%02x",tc_frame.tc_sec_header.iv[i]);
+        //         }
+        //         OS_printf("\n");
+        //     }
+        //     else{
+        //         OS_printf("IV is 0 length for this SA.\n");
+        //     }
+        // #endif
+
         for (y = 10; y <= (tc_frame.tc_header.fl - 2); y++)
         {	
             tc_frame.tc_pdu[y - 10] = (uint8)ingest[y]; 
         }
         // FECF
-        tc_frame.tc_sec_trailer.fecf = ((uint8)ingest[y] << 8) | ((uint8)ingest[y+1]);
-        Crypto_FECF((int) tc_frame.tc_sec_trailer.fecf, ingest, (tc_frame.tc_header.fl - 2));
+        tc_frame.tc_fecf.fecf = ((uint8)ingest[y] << 8) | ((uint8)ingest[y+1]);
+        Crypto_FECF((int) tc_frame.tc_fecf.fecf, ingest, (tc_frame.tc_header.fl - 2));
     }
     
     #ifdef TC_DEBUG
         Crypto_tcPrint(&tc_frame);
+        OS_printf("\t\t Overall TF length is: %d + 1 = %d bytes\n", tc_frame.tc_header.fl, (tc_frame.tc_header.fl+1));
+        OS_printf("\t\t TODO: Adjust to print payload only!\n");
+        OS_printf("\t\t Decrypted TC bytes:  0x");
+        for(int i=0; i < tc_frame.tc_header.fl; i++){
+            OS_printf("%02X",((uint8 *)&tc_frame)[i]);
+        }
+        OS_printf("\n");
     #endif
 
     // Zero ingest

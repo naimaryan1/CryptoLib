@@ -31,7 +31,14 @@ int main(int argc, char *argv[]) {
     if (argc == 3) {
         security_type = argv[1];
         filename = argv[2];
-    } else {
+    } 
+    
+    else if (strcmp(argv[1],"die")==0){
+        fprintf(stderr, "Program terminated by user.\n");
+        return OS_SUCCESS;
+    }
+
+    else {
         fprintf(stderr,"Command line usage: \n"\
                "\t%s <tc|tm|aos> <filename>\n"\
                "<tc|tm|aos> : Process TeleCommand (tc) | Telemetry (tm) | Advanced Orbiting Systems (aos) Security T\n"\

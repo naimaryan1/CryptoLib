@@ -42,7 +42,7 @@ typedef struct
 /*
 ** Security Association
 */
-typedef struct
+typedef struct 
 {
     // Status
     uint16 						ekid;    // Encryption Key ID
@@ -226,7 +226,7 @@ typedef struct
 /*
 ** Telecommand (TC) Definitions
 */
-typedef struct
+typedef struct __attribute__((__packed__))
 {
     uint8 	tfvn	:2;			// Transfer Frame Version Number
     uint8 	bypass	:1;			// Bypass
@@ -244,22 +244,29 @@ typedef struct
 } TC_FramePrimaryHeader_t;
 #define TC_FRAME_PRIMARYHEADER_SIZE     (sizeof(TC_FramePrimaryHeader_t))
 
-typedef struct
+typedef struct __attribute__((__packed__))
 {
     uint8   sh:TC_SH_SIZE;		// Segment Header
     uint16	spi;				// Security Parameter Index
     uint8	iv[IV_SIZE]; 	    // Initialization Vector for encryption
-    //uint8	sn[TC_SN_SIZE]; 	// Sequence Number for anti-replay
-    //uint8	pad[TC_PAD_SIZE]; 	// Count of the used fill Bytes
+    uint8	sn[TC_SN_SIZE]; 	// Sequence Number for anti-replay
+    uint8	pad[TC_PAD_SIZE]; 	// Count of the used fill Bytes
 } TC_FrameSecurityHeader_t;
 #define TC_FRAME_SECHEADER_SIZE     (sizeof(TC_FrameSecurityHeader_t))
 
 typedef struct
 {
     uint8   mac[MAC_SIZE];	// Message Authentication Code
-    uint16	fecf;				// Frame Error Control Field
+    // uint16	fecf;				// Frame Error Control Field
 } TC_FrameSecurityTrailer_t;
 #define TC_FRAME_SECTRAILER_SIZE     (sizeof(TC_FrameSecurityTrailer_t))
+
+typedef struct
+{
+    uint16	fecf;				// Frame Error Control Field
+} TC_FrameFECF_t;
+#define TC_FRAME_FECF_SIZE     (sizeof(TC_FrameFECF_t))
+
 
 typedef struct
 {
@@ -267,6 +274,7 @@ typedef struct
     TC_FrameSecurityHeader_t	tc_sec_header;
     uint8 						tc_pdu[TC_FRAME_DATA_SIZE];
     TC_FrameSecurityTrailer_t	tc_sec_trailer;
+    TC_FrameFECF_t              tc_fecf;
 } TC_t;
 #define TC_SIZE     (sizeof(TC_t))
 

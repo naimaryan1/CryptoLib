@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            /* Test settings to rekey SA 6, enable SA 6, then PROCESS an encrypted ping for that SA*/
+            // "program": "/media/sf_cryptolib/CryptoLib/build/bin/crypto_interface",
+            // "args": ["tc", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/tc5.1.dat", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/tc5.2.dat", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/tc5.3.dat"],
+            
+            /* Test settings to use SA 6 apply tc to a plaintext ping */
+            // TODO:  Confirm this is what I think it is...
+            // "program": "/media/sf_cryptolib/CryptoLib/build/bin/tc_apply_test",
+            // "args": ["tc", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/tc5.1.dat", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/tc5.2.dat", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/raw_tc_sdls_ping.dat"],
+            
+            /* Test settings for tc_process of a plaintext ping */
+            // "program": "/media/sf_cryptolib/CryptoLib/build/bin/process_security",
+            // "args": ["tc", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/raw_tc_sdls_ping.dat"],
+
+            /* Test settings for tc_apply of a plaintext ping plaintext SA*/
+            /* If you want to apply a specific SA, modify SA DB so it is active */
+            /* Example: Either SA[1] or SA[4] */
+            "program": "/media/sf_cryptolib/CryptoLib/build/bin/apply_security",
+            "args": ["tc", "/media/sf_cryptolib/CryptoLib/fsw/crypto_tests/data/raw_tc_sdls_ping.dat"],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

@@ -20,9 +20,14 @@ ivv-itc@lists.nasa.gov
 /*
 ** Includes
 */
+#include "crypto.h"
 #include "crypto_print.h"
 #include "crypto_structs.h"
 
+/*
+** Access to SA
+*/
+extern SecurityAssociation_t *pSA;
 
 /*
 ** Print Functions
@@ -31,7 +36,7 @@ void Crypto_tcPrint(TC_t* tc_frame)
 // Prints the current TC in memory 
 {
     OS_printf("Current TC in memory is: \n");
-    OS_printf("\t Header\n");
+    OS_printf("\t TF Header\n");
     OS_printf("\t\t tfvn   = 0x%01x \n", tc_frame->tc_header.tfvn);
     OS_printf("\t\t bypass = 0x%01x \n", tc_frame->tc_header.bypass);
     OS_printf("\t\t cc     = 0x%01x \n", tc_frame->tc_header.cc);
@@ -40,16 +45,66 @@ void Crypto_tcPrint(TC_t* tc_frame)
     OS_printf("\t\t vcid   = 0x%02x \n", tc_frame->tc_header.vcid);
     OS_printf("\t\t fl     = 0x%03x \n", tc_frame->tc_header.fl);
     OS_printf("\t\t fsn    = 0x%02x \n", tc_frame->tc_header.fsn);
-    OS_printf("\t SDLS Header\n");
+    OS_printf("\t SDLS Security Header\n");
     OS_printf("\t\t sh     = 0x%02x \n", tc_frame->tc_sec_header.sh);
     OS_printf("\t\t spi    = 0x%04x \n", tc_frame->tc_sec_header.spi);
-    OS_printf("\t\t iv[0]  = 0x%02x \n", tc_frame->tc_sec_header.iv[0]);
-    OS_printf("\t Payload \n");
+    uint8 sa_iv_len = (struct SecurityAssociation_t*)pSA[tc_frame->tc_sec_header.spi].iv_len; // John - shivf, or iv_len?
+    OS_printf("\t\t Fetched IV Size from SA: %d\n", sa_iv_len); 
+    if (sa_iv_len > 0){
+        OS_printf("\t\t Printing IV: \n\t\t\t ");
+        for (int i = 0; i < sa_iv_len; i++)
+        {
+            OS_printf("%02x",tc_frame->tc_sec_header.iv[i]);
+        }
+        OS_printf("\n");
+    }
+    else{
+        OS_printf("\t\t iv     = N/A\n");
+    }
+    uint8 sa_arc_len = (struct SecurityAssociation_t*)pSA[tc_frame->tc_sec_header.spi].arc_len;
+    OS_printf("\t\t Fetched ARC Size from SA: %d\n", sa_arc_len);
+    if (sa_arc_len>0){
+        OS_printf("\t\t arc    = 0x");
+        for (int i=0; i<sa_arc_len;i++)
+        {
+            OS_printf("%02X", tc_frame->tc_sec_header.sn[i]);
+        }
+        OS_printf("\n");
+    }
+    else{
+        OS_printf("\t\t arc    = N/A");
+    }
+    OS_printf("\t\t Printing #defined pad size: %d\n", TC_PAD_SIZE);
+    if (TC_PAD_SIZE>0){
+        OS_printf("\t\t pad    = 0x");
+        for (int i=0; i<TC_PAD_SIZE;i++)
+        {
+            OS_printf("%02X", tc_frame->tc_sec_header.pad[i]);
+        }
+        OS_printf("\n");
+    }
+    else{
+        OS_printf("\t\t pad    = N/A");
+    }
+    OS_printf("\t Initial payload bytes\n");
     OS_printf("\t\t data[0]= 0x%02x \n", tc_frame->tc_pdu[0]);
     OS_printf("\t\t data[1]= 0x%02x \n", tc_frame->tc_pdu[1]);
     OS_printf("\t\t data[2]= 0x%02x \n", tc_frame->tc_pdu[2]);
-    OS_printf("\t SDLS Trailer\n");
-    OS_printf("\t\t FECF   = 0x%04x \n", tc_frame->tc_sec_trailer.fecf);
+    OS_printf("\t SDLS Security Trailer\n");
+    uint8 sa_mac_len = (struct SecurityAssociation_t*)pSA[tc_frame->tc_sec_header.spi].stmacf_len;
+    OS_printf("\t\t Fetched MAC length from SA: %d\n", sa_mac_len); 
+    OS_printf("\t\t MAC    = ");
+    if (sa_mac_len > 0){
+        for (int i=0; i<sa_mac_len; i++){
+            OS_printf("%02x", tc_frame->tc_sec_trailer.mac[i]);
+        }
+    }
+    else{
+        OS_printf("N/A");
+    }
+    OS_printf("\n");
+    OS_printf("\t TF Trailer\n");
+    OS_printf("\t\t FECF   = 0x%04x \n", tc_frame->tc_fecf.fecf);
     OS_printf("\n");
 }
 
@@ -200,6 +255,19 @@ void Crypto_saPrint(SecurityAssociation_t* sa)
     OS_printf("\t arc[1]     = 0x%02x \n", sa->arc[1]);
     OS_printf("\t arcw_len   = 0x%02x \n", sa->arcw_len);
     OS_printf("\t arcw[0]    = 0x%02x \n", sa->arcw[0]);
+}
+
+void Crypto_tfheaderPrint(TC_FramePrimaryHeader_t *tc_header){
+    OS_printf("Current TCTF Header in memory is: \n");
+    OS_printf("\t Header\n");
+    OS_printf("\t\t tfvn   = 0x%01x \n", tc_header->tfvn);
+    OS_printf("\t\t bypass = 0x%01x \n", tc_header->bypass);
+    OS_printf("\t\t cc     = 0x%01x \n", tc_header->cc);
+    OS_printf("\t\t spare  = 0x%02x \n", tc_header->spare);
+    OS_printf("\t\t scid   = 0x%03x \n", tc_header->scid);
+    OS_printf("\t\t vcid   = 0x%02x \n", tc_header->vcid);
+    OS_printf("\t\t fl     = 0x%03x \n", tc_header->fl);
+    OS_printf("\t\t fsn    = 0x%02x \n", tc_header->fsn);
 }
 
 #endif

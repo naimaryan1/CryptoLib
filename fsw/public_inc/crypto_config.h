@@ -21,16 +21,16 @@ ivv-itc@lists.nasa.gov
     //#define BUILD_STATIC
 
 // Debug Defines
-    //#define ARC_DEBUG
-    //#define CCSDS_DEBUG
+    #define ARC_DEBUG
+    #define CCSDS_DEBUG
     //#define DEBUG //(CMAKE option, not hardcoded)
     //#define FECF_DEBUG
     //#define MAC_DEBUG
     #define OCF_DEBUG
     #define PDU_DEBUG
     //#define SA_DEBUG
-    //#define TC_DEBUG
-    //#define TM_DEBUG
+    #define TC_DEBUG
+    #define TM_DEBUG
 
 // Debug Colors
     #ifdef DEBUG
@@ -150,7 +150,7 @@ ivv-itc@lists.nasa.gov
     #define TC_SH_SIZE					8       /* bits */
     #define TC_SN_SIZE					0
     #define TC_SN_WINDOW				10		/* +/- value */
-    #define	TC_PAD_SIZE					0
+    #define	TC_PAD_SIZE					1
     #define	TC_FRAME_DATA_SIZE			1740 	/* bytes */
 
 // CCSDS PUS Defines
