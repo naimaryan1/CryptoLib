@@ -41,6 +41,7 @@ typedef struct
 
 /*
 ** Security Association
+** Reference: CCSDS 3551b1 Table 6-1
 */
 typedef struct 
 {
