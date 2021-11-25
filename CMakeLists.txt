@@ -50,4 +50,4 @@ if(NOT DEFINED ${PROJECT_BINARY_DIR})
     set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build)
 endif()
 
-add_subdirectory(fsw)
+add_subdirectory(src)
