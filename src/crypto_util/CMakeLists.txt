@@ -15,10 +15,9 @@
 #   ivv-itc@lists.nasa.gov
 
 include_directories(include)
-include_directories(../crypto/public_inc)
 
 aux_source_directory(src UTIL_SRC_FILES)
-aux_source_directory(app APP_SRC_FILES)
+aux_source_directory(util APP_SRC_FILES)
 
 file( GLOB SOURCE_FILES app/*.c )
 foreach(SOURCE_PATH ${SOURCE_FILES})
