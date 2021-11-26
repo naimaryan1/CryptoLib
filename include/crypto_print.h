@@ -21,9 +21,10 @@
 /*
 ** Includes
 */
+#include <stdio.h>
+#include <stddef.h>
 #include "crypto.h"
 #include "crypto_structs.h"
-
 
 /*
 ** Prototypes

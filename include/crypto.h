@@ -24,7 +24,7 @@ ivv-itc@lists.nasa.gov
 #ifdef NOS3 //NOS3/cFS build is ready
 #include "cfe.h"
 #else //Assume build outside of NOS3/cFS infrastructure
-#include "cfe_minimum.h"
+
 #endif
 
 #include "crypto_structs.h"
