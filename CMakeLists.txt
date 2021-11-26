@@ -25,6 +25,10 @@ OPTION(MYSQL "Mysql" OFF) # Disabled by default, enable with: -DMYSQL=ON
 
 IF(DEBUG)
     ADD_DEFINITIONS(-DDEBUG -DOCF_DEBUG -DFECF_DEBUG -DSA_DEBUG -DPDU_DEBUG -DCCSDS_DEBUG -DTC_DEBUG -DMAC_DEBUG -DTM_DEBUG)
+
+    # Produce debugging information for use by GDB. This means to use the most expressive format available 
+    # (DWARF, stabs, or the native format if neither of those are supported), 
+    # including GDB extensions if at all possible.
     add_compile_options(-ggdb)
 ENDIF(DEBUG)
 
@@ -32,8 +36,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
     enable_testing()
 endif()
-
-include_directories(fsw/public_inc)
 
 # The shared OSAL and cFE include directories should always be used
 # Note that this intentionally does NOT include PSP-specific includes, just the generic
