@@ -129,11 +129,11 @@ int32 Crypto_Init(void)
     if (!gcry_check_version(GCRYPT_VERSION))
     {
         fprintf(stderr, "Gcrypt Version: %s",GCRYPT_VERSION);
-        OS_printf(KRED "\tERROR: gcrypt version mismatch! \n" RESET);
+        printf(KRED "\tERROR: gcrypt version mismatch! \n" RESET);
     }
     if (gcry_control(GCRYCTL_SELFTEST) != GPG_ERR_NO_ERROR)
     {
-        OS_printf(KRED "ERROR: gcrypt self test failed\n" RESET);
+        printf(KRED "ERROR: gcrypt self test failed\n" RESET);
     }
     gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 
@@ -150,7 +150,7 @@ int32 Crypto_Init(void)
     Crypto_Calc_CRC_Init_Table();
 
     // cFS Standard Initialized Message
-    OS_printf (KBLU "Crypto Lib Intialized.  Version %d.%d.%d.%d\n" RESET,
+    printf (KBLU "Crypto Lib Intialized.  Version %d.%d.%d.%d\n" RESET,
                 CRYPTO_LIB_MAJOR_VERSION,
                 CRYPTO_LIB_MINOR_VERSION, 
                 CRYPTO_LIB_REVISION, 
@@ -609,7 +609,7 @@ static void Crypto_Calc_CRC_Init_Table(void)
             crc = (crc >> 1) ^ (-(int)(crc & 1) & poly);
         }
         crc32Table[i] = crc;
-        //OS_printf("crc32Table[%d] = 0x%08x \n", i, crc32Table[i]);
+        //printf("crc32Table[%d] = 0x%08x \n", i, crc32Table[i]);
     }
     
     // Code provided by ESA
@@ -625,7 +625,7 @@ static void Crypto_Calc_CRC_Init_Table(void)
         if ( (i &  64) != 0 )  val ^= 0x48C4;
         if ( (i & 128) != 0 )  val ^= 0x9188;
         crc16Table[i] = val;
-        //OS_printf("crc16Table[%d] = 0x%04x \n", i, crc16Table[i]);
+        //printf("crc16Table[%d] = 0x%04x \n", i, crc16Table[i]);
     }
 }
 
@@ -726,7 +726,7 @@ static void Crypto_TM_updatePDU(char* ingest, int len_ingest)
         // Copy actual packet
         while (x < len_ingest + tm_offset)
         {
-            //OS_printf("ingest[x - tm_offset] = 0x%02x \n", (uint8)ingest[x - tm_offset]);
+            //printf("ingest[x - tm_offset] = 0x%02x \n", (uint8)ingest[x - tm_offset]);
             tm_frame.tm_pdu[x] = (uint8)ingest[x - tm_offset];
             x++;
         }
@@ -945,7 +945,7 @@ static int32 Crypto_FECF(int fecf, char* ingest, int len_ingest,TC_t* tc_frame)
             }
             else
             {   // TODO: Error Correction
-                OS_printf(KRED "Error: FECF incorrect!\n" RESET);
+                printf(KRED "Error: FECF incorrect!\n" RESET);
                 if (log_summary.rs > 0)
                 {
                     Crypto_increment((uint8*)&log_summary.num_se, 4);
@@ -958,7 +958,7 @@ static int32 Crypto_FECF(int fecf, char* ingest, int len_ingest,TC_t* tc_frame)
                     log.blk[log_count++].em_len = 4;
                 }
                 #ifdef FECF_DEBUG
-                    OS_printf("\t Calculated = 0x%04x \n\t Received   = 0x%04x \n", calc_fecf, tc_frame->tc_sec_trailer.fecf);
+                    printf("\t Calculated = 0x%04x \n\t Received   = 0x%04x \n", calc_fecf, tc_frame->tc_sec_trailer.fecf);
                 #endif
                 result = OS_ERROR;
             }
@@ -996,14 +996,14 @@ static uint16 Crypto_Calc_FECF(char* ingest, int len_ingest)
     }
 
     #ifdef FECF_DEBUG
-        OS_printf(KCYN "Crypto_Calc_FECF: 0x%02x%02x%02x%02x%02x, len_ingest = %d\n" RESET, ingest[0], ingest[1], ingest[2], ingest[3], ingest[4], len_ingest);
-        OS_printf(KCYN "0x" RESET);
+        printf(KCYN "Crypto_Calc_FECF: 0x%02x%02x%02x%02x%02x, len_ingest = %d\n" RESET, ingest[0], ingest[1], ingest[2], ingest[3], ingest[4], len_ingest);
+        printf(KCYN "0x" RESET);
         for (int x = 0; x < len_ingest; x++)
         {
-            OS_printf(KCYN "%02x" RESET, (uint8)*(ingest+x));
+            printf(KCYN "%02x" RESET, (uint8)*(ingest+x));
         }
-        OS_printf(KCYN "\n" RESET);
-        OS_printf(KCYN "In Crypto_Calc_FECF! fecf = 0x%04x\n" RESET, fecf);
+        printf(KCYN "\n" RESET);
+        printf(KCYN "In Crypto_Calc_FECF! fecf = 0x%04x\n" RESET, fecf);
     #endif
     
     return fecf;
@@ -1015,7 +1015,7 @@ static uint16 Crypto_Calc_CRC16(char* data, int size)
 
     for ( ; size > 0; size--)
     {  
-        //OS_printf("*data = 0x%02x \n", (uint8) *data);
+        //printf("*data = 0x%02x \n", (uint8) *data);
         crc = ((crc << 8) & 0xFF00) ^ crc16Table[(crc >> 8) ^ *data++];
     }
        
@@ -1062,7 +1062,7 @@ static int32 Crypto_Key_OTAR(void)
             log.blk[log_count].emv[3] = 0x41;
             log.blk[log_count++].em_len = 4;
         }
-        OS_printf(KRED "Error: MKID is not valid! \n" RESET);
+        printf(KRED "Error: MKID is not valid! \n" RESET);
         status = OS_ERROR;
         return status;
     }
@@ -1070,14 +1070,14 @@ static int32 Crypto_Key_OTAR(void)
     for (int count = 2; count < (2 + IV_SIZE); count++)
     {	// Initialization Vector
         packet.iv[count-2] = sdls_frame.pdu.data[count];
-        //OS_printf("packet.iv[%d] = 0x%02x\n", count-2, packet.iv[count-2]);
+        //printf("packet.iv[%d] = 0x%02x\n", count-2, packet.iv[count-2]);
     }
     
     count = sdls_frame.pdu.pdu_len - MAC_SIZE; 
     for (int w = 0; w < 16; w++)
     {	// MAC
         packet.mac[w] = sdls_frame.pdu.data[count + w];
-        //OS_printf("packet.mac[%d] = 0x%02x\n", w, packet.mac[w]);
+        //printf("packet.mac[%d] = 0x%02x\n", w, packet.mac[w]);
     }
 
     gcry_error = gcry_cipher_open(
@@ -1088,7 +1088,7 @@ static int32 Crypto_Key_OTAR(void)
     );
     if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
     {
-        OS_printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+        printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         status = OS_ERROR;
         return status;
     }
@@ -1099,7 +1099,7 @@ static int32 Crypto_Key_OTAR(void)
     );
     if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
     {
-        OS_printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+        printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         status = OS_ERROR;
         return status;
     }
@@ -1110,7 +1110,7 @@ static int32 Crypto_Key_OTAR(void)
     );
     if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
     {
-        OS_printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+        printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         status = OS_ERROR;
         return status;
     }
@@ -1123,7 +1123,7 @@ static int32 Crypto_Key_OTAR(void)
     );
     if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
     {
-        OS_printf(KRED "ERROR: gcry_cipher_decrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+        printf(KRED "ERROR: gcry_cipher_decrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         status = OS_ERROR;
         return status;
     }
@@ -1134,7 +1134,7 @@ static int32 Crypto_Key_OTAR(void)
     );
     if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
     {
-        OS_printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+        printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         status = OS_ERROR;
         return status;
     }
@@ -1158,7 +1158,7 @@ static int32 Crypto_Key_OTAR(void)
                 log.blk[log_count].emv[3] = 0x41; // A
                 log.blk[log_count++].em_len = 4;
             }
-            OS_printf(KRED "Error: Cannot OTAR master key! \n" RESET);
+            printf(KRED "Error: Cannot OTAR master key! \n" RESET);
             status = OS_ERROR;
         return status;
         }
@@ -1169,7 +1169,7 @@ static int32 Crypto_Key_OTAR(void)
             {	// Encrypted Key
                 packet.EKB[x].ek[y-count] = sdls_frame.pdu.data[y];
                 #ifdef SA_DEBUG
-                    OS_printf("\t packet.EKB[%d].ek[%d] = 0x%02x\n", x, y-count, packet.EKB[x].ek[y-count]);
+                    printf("\t packet.EKB[%d].ek[%d] = 0x%02x\n", x, y-count, packet.EKB[x].ek[y-count]);
                 #endif
 
                 // Setup Key Ring
@@ -1183,15 +1183,15 @@ static int32 Crypto_Key_OTAR(void)
     }
 
     #ifdef PDU_DEBUG
-        OS_printf("Received %d keys via master key %d: \n", pdu_keys, packet.mkid);
+        printf("Received %d keys via master key %d: \n", pdu_keys, packet.mkid);
         for (int x = 0; x < pdu_keys; x++)
         {
-            OS_printf("%d) Key ID = %d, 0x", x+1, packet.EKB[x].ekid);
+            printf("%d) Key ID = %d, 0x", x+1, packet.EKB[x].ekid);
             for(int y = 0; y < KEY_SIZE; y++)
             {
-                OS_printf("%02x", packet.EKB[x].ek[y]);
+                printf("%02x", packet.EKB[x].ek[y]);
             }
-            OS_printf("\n");
+            printf("\n");
         } 
     #endif
     
@@ -1205,7 +1205,7 @@ static int32 Crypto_Key_update(uint8 state)
     int count = 0;
     int pdu_keys = sdls_frame.pdu.pdu_len / 2;
     #ifdef PDU_DEBUG
-        OS_printf("Keys ");
+        printf("Keys ");
     #endif
     // Read in PDU
     for (int x = 0; x < pdu_keys; x++)
@@ -1215,35 +1215,35 @@ static int32 Crypto_Key_update(uint8 state)
         #ifdef PDU_DEBUG
             if (x != (pdu_keys - 1))
             {
-                OS_printf("%d, ", packet.kblk[x].kid);
+                printf("%d, ", packet.kblk[x].kid);
             }
             else
             {
-                OS_printf("and %d ", packet.kblk[x].kid);
+                printf("and %d ", packet.kblk[x].kid);
             }
         #endif
     }
     #ifdef PDU_DEBUG
-        OS_printf("changed to state ");
+        printf("changed to state ");
         switch (state)
         {
             case KEY_PREACTIVE:
-                OS_printf("PREACTIVE. \n");
+                printf("PREACTIVE. \n");
                 break;
             case KEY_ACTIVE:
-                OS_printf("ACTIVE. \n");
+                printf("ACTIVE. \n");
                 break;
             case KEY_DEACTIVATED:
-                OS_printf("DEACTIVATED. \n");
+                printf("DEACTIVATED. \n");
                 break;
             case KEY_DESTROYED:
-                OS_printf("DESTROYED. \n");
+                printf("DESTROYED. \n");
                 break;
             case KEY_CORRUPTED:
-                OS_printf("CORRUPTED. \n");
+                printf("CORRUPTED. \n");
                 break;
             default:
-                OS_printf("ERROR. \n");
+                printf("ERROR. \n");
                 break;
         }
     #endif
@@ -1264,7 +1264,7 @@ static int32 Crypto_Key_update(uint8 state)
                 log.blk[log_count].emv[3] = 0x41;
                 log.blk[log_count++].em_len = 4;
             }
-            OS_printf(KRED "Error: MKID state cannot be changed! \n" RESET);
+            printf(KRED "Error: MKID state cannot be changed! \n" RESET);
             // TODO: Exit
         }
 
@@ -1272,7 +1272,7 @@ static int32 Crypto_Key_update(uint8 state)
         {
             ek_ring[packet.kblk[x].kid].key_state = state;
             #ifdef PDU_DEBUG
-                //OS_printf("Key ID %d state changed to ", packet.kblk[x].kid);
+                //printf("Key ID %d state changed to ", packet.kblk[x].kid);
             #endif
         }
         else 
@@ -1288,7 +1288,7 @@ static int32 Crypto_Key_update(uint8 state)
                 log.blk[log_count].emv[3] = 0x41;
                 log.blk[log_count++].em_len = 4;
             }
-            OS_printf(KRED "Error: Key %d cannot transition to desired state! \n" RESET, packet.kblk[x].kid);
+            printf(KRED "Error: Key %d cannot transition to desired state! \n" RESET, packet.kblk[x].kid);
         }
     }
     return OS_SUCCESS; 
@@ -1338,7 +1338,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
     //uint8 tmp_mac[MAC_SIZE];
 
     #ifdef PDU_DEBUG
-        OS_printf("Crypto_Key_verify: Requested %d key(s) to verify \n", pdu_keys);
+        printf("Crypto_Key_verify: Requested %d key(s) to verify \n", pdu_keys);
     #endif
     
     // Read in PDU
@@ -1348,7 +1348,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
         packet.blk[x].kid = ((uint8)sdls_frame.pdu.data[count] << 8) | ((uint8)sdls_frame.pdu.data[count+1]);
         count = count + 2;
         #ifdef PDU_DEBUG
-            OS_printf("Crypto_Key_verify: Block %d Key ID is %d \n", x, packet.blk[x].kid);
+            printf("Crypto_Key_verify: Block %d Key ID is %d \n", x, packet.blk[x].kid);
         #endif
         // Key Challenge
         for (int y = 0; y < CHALLENGE_SIZE; y++)
@@ -1356,7 +1356,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
             packet.blk[x].challenge[y] = sdls_frame.pdu.data[count++];
         }
         #ifdef PDU_DEBUG
-            OS_printf("\n");
+            printf("\n");
         #endif
     }
     
@@ -1387,7 +1387,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         }
         gcry_error = gcry_cipher_setkey(
             tmp_hd, 
@@ -1396,7 +1396,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         }
         gcry_error = gcry_cipher_setiv(
             tmp_hd, 
@@ -1405,7 +1405,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         }
         gcry_error = gcry_cipher_encrypt(
             tmp_hd,
@@ -1416,7 +1416,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_encrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_encrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         }
         count = count + CHALLENGE_SIZE; // Don't forget to increment count!
         
@@ -1427,7 +1427,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_gettag error code %d \n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_gettag error code %d \n" RESET,gcry_error & GPG_ERR_CODE_MASK);
         }
         count = count + CHALLENGE_MAC_SIZE; // Don't forget to increment count!
 
@@ -1440,7 +1440,7 @@ static int32 Crypto_Key_verify(char* ingest,TC_t* tc_frame)
     }
 
     #ifdef PDU_DEBUG
-        OS_printf("Crypto_Key_verify: Response is %d bytes \n", count);
+        printf("Crypto_Key_verify: Response is %d bytes \n", count);
     #endif
 
     return count;
@@ -1481,8 +1481,8 @@ static int32 Crypto_MC_status(char* ingest)
     ingest[count++] = (log_summary.rs & 0x00FF);
     
     #ifdef PDU_DEBUG
-        OS_printf("log_summary.num_se = 0x%02x \n",log_summary.num_se);
-        OS_printf("log_summary.rs = 0x%02x \n",log_summary.rs);
+        printf("log_summary.num_se = 0x%02x \n",log_summary.num_se);
+        printf("log_summary.rs = 0x%02x \n",log_summary.rs);
     #endif
 
     return count;
@@ -1510,9 +1510,9 @@ static int32 Crypto_MC_dump(char* ingest)
     }
 
     #ifdef PDU_DEBUG
-        OS_printf("log_count = %d \n", log_count);
-        OS_printf("log_summary.num_se = 0x%02x \n",log_summary.num_se);
-        OS_printf("log_summary.rs = 0x%02x \n",log_summary.rs);
+        printf("log_count = %d \n", log_count);
+        printf("log_summary.num_se = 0x%02x \n",log_summary.num_se);
+        printf("log_summary.rs = 0x%02x \n",log_summary.rs);
     #endif
 
     return count; 
@@ -1617,15 +1617,15 @@ static int32 Crypto_SA_readARSN(char* ingest)
     }
 
     #ifdef PDU_DEBUG
-        OS_printf("spi = %d \n", spi);
+        printf("spi = %d \n", spi);
         if (sa_ptr->iv_len > 0)
         {
-            OS_printf("ARSN = 0x");
+            printf("ARSN = 0x");
             for (int x = 0; x < sa_ptr->iv_len; x++)
             {
-                OS_printf("%02x", sa_ptr->iv[x]);
+                printf("%02x", sa_ptr->iv[x]);
             }
-            OS_printf("\n");
+            printf("\n");
         }
     #endif
     
@@ -1723,11 +1723,11 @@ static int32 Crypto_User_ModifyKey(void)
     {
         case 1: // Invalidate Key
             ek_ring[kid].value[KEY_SIZE-1]++;
-            OS_printf("Key %d value invalidated! \n", kid);
+            printf("Key %d value invalidated! \n", kid);
             break;
         case 2: // Modify key state
             ek_ring[kid].key_state = (uint8)sdls_frame.pdu.data[3] & 0x0F;
-            OS_printf("Key %d state changed to %d! \n", kid, mod);
+            printf("Key %d state changed to %d! \n", kid, mod);
             break;
         default:
             // Error
@@ -1762,7 +1762,7 @@ static int32 Crypto_User_ModifyVCID(void)
                 if (sa_ptr->gvcid_tm_blk[j].vcid == tm_frame.tm_header.vcid)
                 {
                     tm_frame.tm_sec_header.spi = i;
-                    OS_printf("TM Frame SPI changed to %d \n",i);
+                    printf("TM Frame SPI changed to %d \n",i);
                     break;
                 }
             }
@@ -1792,42 +1792,42 @@ static int32 Crypto_PDU(char* ingest,TC_t* tc_frame)
                             {
                                 case PID_OTAR:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "Key OTAR\n" RESET);
+                                        printf(KGRN "Key OTAR\n" RESET);
                                     #endif
                                     status = Crypto_Key_OTAR();
                                     break;
                                 case PID_KEY_ACTIVATION:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "Key Activate\n" RESET);
+                                        printf(KGRN "Key Activate\n" RESET);
                                     #endif
                                     status = Crypto_Key_update(KEY_ACTIVE);
                                     break;
                                 case PID_KEY_DEACTIVATION:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "Key Deactivate\n" RESET);
+                                        printf(KGRN "Key Deactivate\n" RESET);
                                     #endif
                                     status = Crypto_Key_update(KEY_DEACTIVATED);
                                     break;
                                 case PID_KEY_VERIFICATION:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "Key Verify\n" RESET);
+                                        printf(KGRN "Key Verify\n" RESET);
                                     #endif
                                     status = Crypto_Key_verify(ingest,tc_frame);
                                     break;
                                 case PID_KEY_DESTRUCTION:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "Key Destroy\n" RESET);
+                                        printf(KGRN "Key Destroy\n" RESET);
                                     #endif
                                     status = Crypto_Key_update(KEY_DESTROYED);
                                     break;
                                 case PID_KEY_INVENTORY:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "Key Inventory\n" RESET);
+                                        printf(KGRN "Key Inventory\n" RESET);
                                     #endif
                                     status = Crypto_Key_inventory(ingest);
                                     break;
                                 default:
-                                    OS_printf(KRED "Error: Crypto_PDU failed interpreting Key Management Procedure Identification Field! \n" RESET);
+                                    printf(KRED "Error: Crypto_PDU failed interpreting Key Management Procedure Identification Field! \n" RESET);
                                     break;
                             }
                             break;
@@ -1836,66 +1836,66 @@ static int32 Crypto_PDU(char* ingest,TC_t* tc_frame)
                             {
                                 case PID_CREATE_SA:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA Create\n" RESET); 
+                                        printf(KGRN "SA Create\n" RESET); 
                                     #endif
                                     status = sadb_routine->sadb_sa_create();
                                     break;
                                 case PID_DELETE_SA:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA Delete\n" RESET);
+                                        printf(KGRN "SA Delete\n" RESET);
                                     #endif
                                     status = sadb_routine->sadb_sa_delete();
                                     break;
                                 case PID_SET_ARSNW:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA setARSNW\n" RESET);
+                                        printf(KGRN "SA setARSNW\n" RESET);
                                     #endif
                                     status = sadb_routine->sadb_sa_setARSNW();
                                     break;
                                 case PID_REKEY_SA:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA Rekey\n" RESET); 
+                                        printf(KGRN "SA Rekey\n" RESET); 
                                     #endif
                                     status = sadb_routine->sadb_sa_rekey();
                                     break;
                                 case PID_EXPIRE_SA:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA Expire\n" RESET);
+                                        printf(KGRN "SA Expire\n" RESET);
                                     #endif
                                     status = sadb_routine->sadb_sa_expire();
                                     break;
                                 case PID_SET_ARSN:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA SetARSN\n" RESET);
+                                        printf(KGRN "SA SetARSN\n" RESET);
                                     #endif
                                     status = sadb_routine->sadb_sa_setARSN();
                                     break;
                                 case PID_START_SA:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA Start\n" RESET); 
+                                        printf(KGRN "SA Start\n" RESET); 
                                     #endif
                                     status = sadb_routine->sadb_sa_start(tc_frame);
                                     break;
                                 case PID_STOP_SA:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA Stop\n" RESET);
+                                        printf(KGRN "SA Stop\n" RESET);
                                     #endif
                                     status = sadb_routine->sadb_sa_stop();
                                     break;
                                 case PID_READ_ARSN:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA readARSN\n" RESET);
+                                        printf(KGRN "SA readARSN\n" RESET);
                                     #endif
                                     status = Crypto_SA_readARSN(ingest);
                                     break;
                                 case PID_SA_STATUS:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "SA Status\n" RESET);
+                                        printf(KGRN "SA Status\n" RESET);
                                     #endif
                                     status = sadb_routine->sadb_sa_status(ingest);
                                     break;
                                 default:
-                                    OS_printf(KRED "Error: Crypto_PDU failed interpreting SA Procedure Identification Field! \n" RESET);
+                                    printf(KRED "Error: Crypto_PDU failed interpreting SA Procedure Identification Field! \n" RESET);
                                     break;
                             }
                             break;
@@ -1904,47 +1904,47 @@ static int32 Crypto_PDU(char* ingest,TC_t* tc_frame)
                             {
                                 case PID_PING:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "MC Ping\n" RESET);
+                                        printf(KGRN "MC Ping\n" RESET);
                                     #endif
                                     status = Crypto_MC_ping(ingest);
                                     break;
                                 case PID_LOG_STATUS:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "MC Status\n" RESET);
+                                        printf(KGRN "MC Status\n" RESET);
                                     #endif
                                     status = Crypto_MC_status(ingest);
                                     break;
                                 case PID_DUMP_LOG:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "MC Dump\n" RESET);
+                                        printf(KGRN "MC Dump\n" RESET);
                                     #endif
                                     status = Crypto_MC_dump(ingest);
                                     break;
                                 case PID_ERASE_LOG:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "MC Erase\n" RESET);
+                                        printf(KGRN "MC Erase\n" RESET);
                                     #endif
                                     status = Crypto_MC_erase(ingest);
                                     break;
                                 case PID_SELF_TEST:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "MC Selftest\n" RESET);
+                                        printf(KGRN "MC Selftest\n" RESET);
                                     #endif
                                     status = Crypto_MC_selftest(ingest);
                                     break;
                                 case PID_ALARM_FLAG:
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KGRN "MC Reset Alarm\n" RESET);
+                                        printf(KGRN "MC Reset Alarm\n" RESET);
                                     #endif
                                     status = Crypto_MC_resetalarm();
                                     break;
                                 default:
-                                    OS_printf(KRED "Error: Crypto_PDU failed interpreting MC Procedure Identification Field! \n" RESET);
+                                    printf(KRED "Error: Crypto_PDU failed interpreting MC Procedure Identification Field! \n" RESET);
                                     break;
                             }
                             break;
                         default: // ERROR
-                            OS_printf(KRED "Error: Crypto_PDU failed interpreting Service Group! \n" RESET);
+                            printf(KRED "Error: Crypto_PDU failed interpreting Service Group! \n" RESET);
                             break;
                     }
                     break;
@@ -1957,54 +1957,54 @@ static int32 Crypto_PDU(char* ingest,TC_t* tc_frame)
                             {
                                 case 0: // Idle Frame Trigger
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Idle Trigger\n" RESET);
+                                        printf(KMAG "User Idle Trigger\n" RESET);
                                     #endif
                                     status = Crypto_User_IdleTrigger(ingest);
                                     break;
                                 case 1: // Toggle Bad SPI
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Toggle Bad SPI\n" RESET);
+                                        printf(KMAG "User Toggle Bad SPI\n" RESET);
                                     #endif
                                     status = Crypto_User_BadSPI();
                                     break;
                                 case 2: // Toggle Bad IV
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Toggle Bad IV\n" RESET);
+                                        printf(KMAG "User Toggle Bad IV\n" RESET);
                                     #endif
                                     status = Crypto_User_BadIV();\
                                     break;
                                 case 3: // Toggle Bad MAC
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Toggle Bad MAC\n" RESET);
+                                        printf(KMAG "User Toggle Bad MAC\n" RESET);
                                     #endif
                                     status = Crypto_User_BadMAC();
                                     break; 
                                 case 4: // Toggle Bad FECF
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Toggle Bad FECF\n" RESET);
+                                        printf(KMAG "User Toggle Bad FECF\n" RESET);
                                     #endif
                                     status = Crypto_User_BadFECF();
                                     break;
                                 case 5: // Modify Key
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Modify Key\n" RESET);
+                                        printf(KMAG "User Modify Key\n" RESET);
                                     #endif
                                     status = Crypto_User_ModifyKey();
                                     break;
                                 case 6: // Modify ActiveTM
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Modify Active TM\n" RESET);
+                                        printf(KMAG "User Modify Active TM\n" RESET);
                                     #endif
                                     status = Crypto_User_ModifyActiveTM();
                                     break;
                                 case 7: // Modify TM VCID
                                     #ifdef PDU_DEBUG
-                                        OS_printf(KMAG "User Modify VCID\n" RESET);
+                                        printf(KMAG "User Modify VCID\n" RESET);
                                     #endif
                                     status = Crypto_User_ModifyVCID();
                                     break;
                                 default:
-                                    OS_printf(KRED "Error: Crypto_PDU received user defined command! \n" RESET);
+                                    printf(KRED "Error: Crypto_PDU received user defined command! \n" RESET);
                                     break;
                             }
                     }
@@ -2013,19 +2013,19 @@ static int32 Crypto_PDU(char* ingest,TC_t* tc_frame)
             break;
             
         case 1:	// Reply
-            OS_printf(KRED "Error: Crypto_PDU failed interpreting PDU Type!  Received a Reply!?! \n" RESET);
+            printf(KRED "Error: Crypto_PDU failed interpreting PDU Type!  Received a Reply!?! \n" RESET);
             break;
     }
 
     #ifdef CCSDS_DEBUG
         if (status > 0)
         {
-            OS_printf(KMAG "CCSDS message put on software bus: 0x" RESET);
+            printf(KMAG "CCSDS message put on software bus: 0x" RESET);
             for (int x = 0; x < status; x++)
             {
-                OS_printf(KMAG "%02x" RESET, (uint8) ingest[x]);
+                printf(KMAG "%02x" RESET, (uint8) ingest[x]);
             }
-            OS_printf("\n");
+            printf("\n");
         }
     #endif
 
@@ -2048,24 +2048,24 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
     gcry_error_t gcry_error = GPG_ERR_NO_ERROR;
 
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_TC_ApplySecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_TC_ApplySecurity START -----\n" RESET);
     #endif
 
     if (p_in_frame == NULL)
     {
         status = OS_ERROR;
-        OS_printf(KRED "Error: Input Buffer NULL! \n" RESET);
+        printf(KRED "Error: Input Buffer NULL! \n" RESET);
         return status;  //Just return here, nothing can be done.
     }
 
     #ifdef DEBUG
-        OS_printf("%d TF Bytes received\n", in_frame_length);
-        OS_printf("DEBUG - ");
+        printf("%d TF Bytes received\n", in_frame_length);
+        printf("DEBUG - ");
         for(int i=0; i < in_frame_length; i++)
         {
-            OS_printf("%02X", ((uint8 *)&*p_in_frame)[i]);
+            printf("%02X", ((uint8 *)&*p_in_frame)[i]);
         }
-        OS_printf("\nPrinted %d bytes\n", in_frame_length);
+        printf("\nPrinted %d bytes\n", in_frame_length);
     #endif
 
     // Primary Header
@@ -2094,7 +2094,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
         ** "Type-C frames do not have the Security Header and Security Trailer."
         */
         #ifdef TC_DEBUG
-            OS_printf(KYEL "DEBUG - Received Control/Command frame - nothing to do.\n" RESET);
+            printf(KYEL "DEBUG - Received Control/Command frame - nothing to do.\n" RESET);
         #endif
         status = OS_ERROR;
     }
@@ -2115,7 +2115,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
         }
 
         #ifdef SA_DEBUG
-            OS_printf(KYEL "DEBUG - Printing SA Entry for current frame.\n" RESET);
+            printf(KYEL "DEBUG - Printing SA Entry for current frame.\n" RESET);
             Crypto_saPrint(sa_ptr);
         #endif
 
@@ -2140,7 +2140,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
         {
             // Probably unnecessary check
             // Leaving for now as it would be cleaner in SA to have an association enum returned I believe
-            OS_printf(KRED "Error: SA Service Type is not defined! \n" RESET);
+            printf(KRED "Error: SA Service Type is not defined! \n" RESET);
             status = OS_ERROR;
             return status;
         }
@@ -2149,16 +2149,16 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
             switch(sa_service_type)
             {
                 case SA_PLAINTEXT:
-                    OS_printf(KBLU "Creating a TC - CLEAR!\n" RESET);
+                    printf(KBLU "Creating a TC - CLEAR!\n" RESET);
                     break;
                 case SA_AUTHENTICATION:
-                    OS_printf(KBLU "Creating a TC - AUTHENTICATED!\n" RESET);
+                    printf(KBLU "Creating a TC - AUTHENTICATED!\n" RESET);
                     break;
                 case SA_ENCRYPTION:
-                    OS_printf(KBLU "Creating a TC - ENCRYPTED!\n" RESET);
+                    printf(KBLU "Creating a TC - ENCRYPTED!\n" RESET);
                     break;
                 case SA_AUTHENTICATED_ENCRYPTION:
-                    OS_printf(KBLU "Creating a TC - AUTHENTICATED ENCRYPTION!\n" RESET);
+                    printf(KBLU "Creating a TC - AUTHENTICATED ENCRYPTION!\n" RESET);
                     break;
             }
         #endif
@@ -2189,23 +2189,23 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
         }
 
         #ifdef TC_DEBUG
-            OS_printf(KYEL "DEBUG - Total TC Buffer to be malloced is: %d bytes\n" RESET, *p_enc_frame_len);
-            OS_printf(KYEL "\tlen of TF\t = %d\n" RESET, in_frame_length);
-            OS_printf(KYEL "\tsegment hdr\t = 1\n" RESET); // TODO: Determine presence of this so not hard-coded
-            OS_printf(KYEL "\tspi len\t\t = 2\n" RESET);
-            OS_printf(KYEL "\tshivf_len\t = %d\n" RESET, sa_ptr->shivf_len);
-            OS_printf(KYEL "\tshsnf_len\t = %d\n" RESET, sa_ptr->shsnf_len);
-            OS_printf(KYEL "\tshplf len\t = %d\n" RESET, sa_ptr->shplf_len);
-            OS_printf(KYEL "\tarc_len\t\t = %d\n" RESET, sa_ptr->arc_len);
-            OS_printf(KYEL "\tpad_size\t = %d\n" RESET, TC_PAD_SIZE);
-            OS_printf(KYEL "\tstmacf_len\t = %d\n" RESET, sa_ptr->stmacf_len);
+            printf(KYEL "DEBUG - Total TC Buffer to be malloced is: %d bytes\n" RESET, *p_enc_frame_len);
+            printf(KYEL "\tlen of TF\t = %d\n" RESET, in_frame_length);
+            printf(KYEL "\tsegment hdr\t = 1\n" RESET); // TODO: Determine presence of this so not hard-coded
+            printf(KYEL "\tspi len\t\t = 2\n" RESET);
+            printf(KYEL "\tshivf_len\t = %d\n" RESET, sa_ptr->shivf_len);
+            printf(KYEL "\tshsnf_len\t = %d\n" RESET, sa_ptr->shsnf_len);
+            printf(KYEL "\tshplf len\t = %d\n" RESET, sa_ptr->shplf_len);
+            printf(KYEL "\tarc_len\t\t = %d\n" RESET, sa_ptr->arc_len);
+            printf(KYEL "\tpad_size\t = %d\n" RESET, TC_PAD_SIZE);
+            printf(KYEL "\tstmacf_len\t = %d\n" RESET, sa_ptr->stmacf_len);
         #endif
 
         // Accio buffer
         p_new_enc_frame = (uint8 *)malloc(*p_enc_frame_len * sizeof (unsigned char));
         if(!p_new_enc_frame)
         {
-            OS_printf(KRED "Error: Malloc for encrypted output buffer failed! \n" RESET);
+            printf(KRED "Error: Malloc for encrypted output buffer failed! \n" RESET);
             status = OS_ERROR;
             return status;
         }
@@ -2220,13 +2220,13 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
         *(p_new_enc_frame+3) = ((*p_enc_frame_len - 1) & (0x00FF));
 
         #ifdef TC_DEBUG
-            OS_printf(KYEL "Printing updated TF Header:\n\t");
+            printf(KYEL "Printing updated TF Header:\n\t");
             for (int i=0; i<TC_FRAME_PRIMARYHEADER_SIZE; i++)
             {
-                OS_printf("%02X", *(p_new_enc_frame+i));
+                printf("%02X", *(p_new_enc_frame+i));
             }
             // Recall: The buffer length is 1 greater than the field value set in the TCTF
-            OS_printf("\n\tLength set to 0x%02X\n" RESET, *p_enc_frame_len-1);
+            printf("\n\tLength set to 0x%02X\n" RESET, *p_enc_frame_len-1);
         #endif
 
         /*
@@ -2253,17 +2253,17 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
             (sa_service_type == SA_AUTHENTICATED_ENCRYPTION))
         {
             #ifdef SA_DEBUG
-                OS_printf(KYEL "Old IV value was:\n\t");
-                for(int i=0; i<sa_ptr->shivf_len; i++) {OS_printf("%02x", sa_ptr->iv[i]);}
-                OS_printf("\n" RESET);
+                printf(KYEL "Old IV value was:\n\t");
+                for(int i=0; i<sa_ptr->shivf_len; i++) {printf("%02x", sa_ptr->iv[i]);}
+                printf("\n" RESET);
             #endif
             #ifdef INCREMENT
                 Crypto_increment(sa_ptr->iv, sa_ptr->shivf_len);
             #endif
             #ifdef SA_DEBUG
-                OS_printf(KYEL "New IV value is:\n\t");
-                for(int i=0; i<sa_ptr->shivf_len; i++) {OS_printf("%02x", sa_ptr->iv[i]);}
-                OS_printf("\n" RESET);
+                printf(KYEL "New IV value is:\n\t");
+                for(int i=0; i<sa_ptr->shivf_len; i++) {printf("%02x", sa_ptr->iv[i]);}
+                printf("\n" RESET);
             #endif
 
             for (int i=0; i < sa_ptr->shivf_len; i++)
@@ -2365,7 +2365,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
                 );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -2376,7 +2376,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -2387,7 +2387,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -2401,13 +2401,13 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
                     aad[y] = p_in_frame[y] & sa_ptr->abm[y];
                 }
                 #ifdef MAC_DEBUG 
-                    OS_printf(KYEL "Preparing AAD:\n");
-                    OS_printf("\tUsing ABM Length of %d\n\t", sa_ptr->abm_len);
+                    printf(KYEL "Preparing AAD:\n");
+                    printf("\tUsing ABM Length of %d\n\t", sa_ptr->abm_len);
                     for (int y = 0; y < sa_ptr->abm_len; y++)
                     {
-                        OS_printf("%02x", aad[y]);
+                        printf("%02x", aad[y]);
                     }
-                    OS_printf("\n" RESET);
+                    printf("\n" RESET);
                 #endif
 
                 gcry_error = gcry_cipher_authenticate(
@@ -2417,8 +2417,8 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
                 );
                 if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
                 {
-                    OS_printf(KRED "ERROR: gcry_cipher_authenticate error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
-                    OS_printf(KRED "Failure: %s/%s\n", gcry_strsource(gcry_error),gcry_strerror (gcry_error));
+                    printf(KRED "ERROR: gcry_cipher_authenticate error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                    printf(KRED "Failure: %s/%s\n", gcry_strsource(gcry_error),gcry_strerror (gcry_error));
                     status = OS_ERROR;
                     return status;
                 }
@@ -2430,14 +2430,14 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
                 // TODO: More robust calculation of this location
                 // uint16 output_loc = TC_FRAME_PRIMARYHEADER_SIZE + 1 + 2 + temp_SA.shivf_len + temp_SA.shsnf_len + temp_SA.shplf_len;
                 #ifdef TC_DEBUG
-                    OS_printf("Encrypted bytes output_loc is %d\n", index);
-                    OS_printf("tf_payload_len is %d\n", tf_payload_len);
-                    OS_printf(KYEL "Printing TC Frame prior to encryption:\n\t");
+                    printf("Encrypted bytes output_loc is %d\n", index);
+                    printf("tf_payload_len is %d\n", tf_payload_len);
+                    printf(KYEL "Printing TC Frame prior to encryption:\n\t");
                     for(int i=0; i < *p_enc_frame_len; i++)
                     {
-                        OS_printf("%02X", *(p_new_enc_frame + i));
+                        printf("%02X", *(p_new_enc_frame + i));
                     }
-                    OS_printf("\n");
+                    printf("\n");
                 #endif
 
                 gcry_error = gcry_cipher_encrypt(
@@ -2449,7 +2449,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
                 );
                 if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
                 {
-                    OS_printf(KRED "ERROR: gcry_cipher_encrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                    printf(KRED "ERROR: gcry_cipher_encrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                     status = OS_ERROR;
                     return status;
                 }
@@ -2461,8 +2461,8 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
                 // TODO - Know if FECF exists
                 mac_loc = *p_enc_frame_len - sa_ptr->stmacf_len - FECF_SIZE;
                 #ifdef MAC_DEBUG
-                    OS_printf(KYEL "MAC location is: %d\n" RESET, mac_loc);
-                    OS_printf(KYEL "MAC size is: %d\n" RESET, MAC_SIZE);
+                    printf(KYEL "MAC location is: %d\n" RESET, mac_loc);
+                    printf(KYEL "MAC size is: %d\n" RESET, MAC_SIZE);
                 #endif
                 gcry_error = gcry_cipher_gettag(
                     tmp_hd,
@@ -2471,7 +2471,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
                 );
                 if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
                 {
-                    OS_printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                    printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                     status = OS_ERROR;
                     return status;
                 }
@@ -2491,7 +2491,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
         // on this particular channel
         // Calc new fecf, don't include old fecf in length
         #ifdef FECF_DEBUG
-            OS_printf(KCYN "Calcing FECF over %d bytes\n" RESET, *p_enc_frame_len - 2);
+            printf(KCYN "Calcing FECF over %d bytes\n" RESET, *p_enc_frame_len - 2);
         #endif
         new_fecf = Crypto_Calc_FECF(p_new_enc_frame, *p_enc_frame_len - 2);
         *(p_new_enc_frame + *p_enc_frame_len - 2) = (uint8) ((new_fecf & 0xFF00) >> 8);
@@ -2499,12 +2499,12 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
         index += 2;
 
         #ifdef TC_DEBUG
-            OS_printf(KYEL "Printing new TC Frame:\n\t");
+            printf(KYEL "Printing new TC Frame:\n\t");
             for(int i=0; i < *p_enc_frame_len; i++)
             {
-                OS_printf("%02X", *(p_new_enc_frame + i));
+                printf("%02X", *(p_new_enc_frame + i));
             }
-            OS_printf("\n\tThe returned length is: %d\n" RESET, *p_enc_frame_len);
+            printf("\n\tThe returned length is: %d\n" RESET, *p_enc_frame_len);
         #endif
 
         *pp_in_frame = p_new_enc_frame;
@@ -2513,7 +2513,7 @@ int32 Crypto_TC_ApplySecurity(const uint8* p_in_frame, const uint16 in_frame_len
     status = sadb_routine->sadb_save_sa(sa_ptr);
 
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_TC_ApplySecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_TC_ApplySecurity END -----\n" RESET);
     #endif
 
     return status;
@@ -2531,7 +2531,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
     SecurityAssociation_t* sa_ptr = NULL;
 
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_TC_ProcessSecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_TC_ProcessSecurity START -----\n" RESET);
     #endif
 
     int byte_idx = 0;
@@ -2560,8 +2560,8 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
     tc_sdls_processed_frame->tc_sec_header.spi = ((uint8)ingest[byte_idx] << 8) | (uint8)ingest[byte_idx+1];
     byte_idx+=2;
     #ifdef TC_DEBUG
-        OS_printf("vcid = %d \n", tc_sdls_processed_frame->tc_header.vcid );
-        OS_printf("spi  = %d \n", tc_sdls_processed_frame->tc_sec_header.spi);
+        printf("vcid = %d \n", tc_sdls_processed_frame->tc_header.vcid );
+        printf("spi  = %d \n", tc_sdls_processed_frame->tc_sec_header.spi);
     #endif
 
     // Checks
@@ -2576,7 +2576,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         // Verify 
         if (tc_sdls_processed_frame->tc_header.scid != (SCID & 0x3FF))
         {
-            OS_printf(KRED "Error: SCID incorrect! \n" RESET);
+            printf(KRED "Error: SCID incorrect! \n" RESET);
             status = OS_ERROR;
         }
         else
@@ -2587,7 +2587,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
                 case 0xFFFF:
                     status = OS_ERROR;
                     report.ispif = 1;
-                    OS_printf(KRED "Error: SPI invalid! \n" RESET);
+                    printf(KRED "Error: SPI invalid! \n" RESET);
                     break;
                 default:
                     break;
@@ -2598,7 +2598,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         if ((report.lspiu > NUM_SA) && (status == OS_SUCCESS))
         {
             report.ispif = 1;
-            OS_printf(KRED "Error: SPI value greater than NUM_SA! \n" RESET);
+            printf(KRED "Error: SPI value greater than NUM_SA! \n" RESET);
             status = OS_ERROR;
         }
         if (status == OS_SUCCESS)
@@ -2612,7 +2612,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         {
             if (sa_ptr->gvcid_tc_blk.mapid != TYPE_TC)
             {	
-                OS_printf(KRED "Error: SA invalid type! \n" RESET);
+                printf(KRED "Error: SA invalid type! \n" RESET);
                 status = OS_ERROR;
             }
         }
@@ -2621,7 +2621,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         //{
         //    if (sa_ptr->gvcid_tc_blk.vcid != tc_sdls_processed_frame->tc_header.vcid)
         //    {	
-        //        OS_printf(KRED "Error: VCID not mapped to provided SPI! \n" RESET);
+        //        printf(KRED "Error: VCID not mapped to provided SPI! \n" RESET);
         //        status = OS_ERROR;
         //    }
         //}
@@ -2629,7 +2629,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         {
             if (sa_ptr->sa_state != SA_OPERATIONAL)
             {
-                OS_printf(KRED "Error: SA state not operational! \n" RESET);
+                printf(KRED "Error: SA state not operational! \n" RESET);
                 status = OS_ERROR;
             }
         }
@@ -2661,24 +2661,24 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         (sa_ptr->ast == 1))
     {	// Authenticated Encryption
         #ifdef DEBUG
-            OS_printf(KBLU "ENCRYPTED TC Received!\n" RESET);
+            printf(KBLU "ENCRYPTED TC Received!\n" RESET);
         #endif
         #ifdef TC_DEBUG
-            OS_printf("IV: \n");
+            printf("IV: \n");
         #endif
         for (x = byte_idx; x < (byte_idx + IV_SIZE); x++)
         {
             tc_sdls_processed_frame->tc_sec_header.iv[x-byte_idx] = (uint8)ingest[x];
             #ifdef TC_DEBUG
-                OS_printf("\t iv[%d] = 0x%02x\n", x-byte_idx, tc_sdls_processed_frame->tc_sec_header.iv[x-byte_idx]);
+                printf("\t iv[%d] = 0x%02x\n", x-byte_idx, tc_sdls_processed_frame->tc_sec_header.iv[x-byte_idx]);
             #endif
         }
         byte_idx += IV_SIZE;
         report.snval = tc_sdls_processed_frame->tc_sec_header.iv[IV_SIZE-1];
 
         #ifdef DEBUG
-            OS_printf("\t tc_sec_header.iv[%d] = 0x%02x \n", IV_SIZE-1, tc_sdls_processed_frame->tc_sec_header.iv[IV_SIZE-1]);
-            OS_printf("\t sa[%d].iv[%d] = 0x%02x \n", tc_sdls_processed_frame->tc_sec_header.spi, IV_SIZE-1, sa_ptr->iv[IV_SIZE-1]);
+            printf("\t tc_sec_header.iv[%d] = 0x%02x \n", IV_SIZE-1, tc_sdls_processed_frame->tc_sec_header.iv[IV_SIZE-1]);
+            printf("\t sa[%d].iv[%d] = 0x%02x \n", tc_sdls_processed_frame->tc_sec_header.spi, IV_SIZE-1, sa_ptr->iv[IV_SIZE-1]);
         #endif
 
         // Check IV is in ARCW
@@ -2698,7 +2698,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
                 log.blk[log_count].emv[3] = 0x41;
                 log.blk[log_count++].em_len = 4;
             }
-            OS_printf(KRED "Error: IV not in window! \n" RESET);
+            printf(KRED "Error: IV not in window! \n" RESET);
             #ifdef OCF_DEBUG
                 Crypto_fsrPrint(&report);
             #endif
@@ -2721,7 +2721,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
                     log.blk[log_count].emv[3] = 0x41;
                     log.blk[log_count++].em_len = 4;
                 }
-                OS_printf(KRED "Error: IV replay! Value lower than expected! \n" RESET);
+                printf(KRED "Error: IV replay! Value lower than expected! \n" RESET);
                 #ifdef OCF_DEBUG
                     Crypto_fsrPrint(&report);
                 #endif
@@ -2747,22 +2747,22 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         x = x + tc_sdls_processed_frame->tc_pdu_len;
 
         #ifdef TC_DEBUG
-            OS_printf("TC: \n"); 
+            printf("TC: \n"); 
             for (int temp = 0; temp < tc_sdls_processed_frame->tc_pdu_len; temp++)
             {	
-                OS_printf("\t ingest[%d] = 0x%02x \n", temp, (uint8)ingest[temp+20]);
+                printf("\t ingest[%d] = 0x%02x \n", temp, (uint8)ingest[temp+20]);
             }
         #endif
 
         // Security Trailer
         #ifdef TC_DEBUG
-            OS_printf("MAC: \n");
+            printf("MAC: \n");
         #endif
         for (y = x; y < (x + MAC_SIZE); y++)
         {
             tc_sdls_processed_frame->tc_sec_trailer.mac[y-x]  = (uint8)ingest[y];
             #ifdef TC_DEBUG
-                OS_printf("\t mac[%d] = 0x%02x\n", y-x, tc_sdls_processed_frame->tc_sec_trailer.mac[y-x]);
+                printf("\t mac[%d] = 0x%02x\n", y-x, tc_sdls_processed_frame->tc_sec_trailer.mac[y-x]);
             #endif
         }
         x = x + MAC_SIZE;
@@ -2782,17 +2782,17 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
             status = OS_ERROR;
             return status;
         }
         #ifdef DEBUG
-            OS_printf("Key ID = %d, 0x", sa_ptr->ekid);
+            printf("Key ID = %d, 0x", sa_ptr->ekid);
             for(int y = 0; y < KEY_SIZE; y++)
             {
-                OS_printf("%02x", ek_ring[sa_ptr->ekid].value[y]);
+                printf("%02x", ek_ring[sa_ptr->ekid].value[y]);
             }
-            OS_printf("\n");
+            printf("\n");
         #endif
         gcry_error = gcry_cipher_setkey(
             tmp_hd,
@@ -2801,7 +2801,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
             status = OS_ERROR;
             return status;
         }
@@ -2812,23 +2812,23 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
             status = OS_ERROR;
             return status;
         }
         #ifdef MAC_DEBUG
-            OS_printf("AAD = 0x");
+            printf("AAD = 0x");
         #endif
         // Prepare additional authenticated data (AAD)
         for (y = 0; y < sa_ptr->abm_len; y++)
         {
             ingest[y] = (uint8) ((uint8)ingest[y] & (uint8)sa_ptr->abm[y]);
             #ifdef MAC_DEBUG
-                OS_printf("%02x", (uint8) ingest[y]);
+                printf("%02x", (uint8) ingest[y]);
             #endif
         }
         #ifdef MAC_DEBUG
-            OS_printf("\n");
+            printf("\n");
         #endif
 
         gcry_error = gcry_cipher_decrypt(
@@ -2840,7 +2840,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_decrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_decrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
             status = OS_ERROR;
             return status;
         }
@@ -2851,14 +2851,14 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         );
         if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
         {
-            OS_printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+            printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
             
-            OS_printf("Actual MAC   = 0x");
+            printf("Actual MAC   = 0x");
             for (int z = 0; z < MAC_SIZE; z++)
             {
-                OS_printf("%02x",tc_sdls_processed_frame->tc_sec_trailer.mac[z]);
+                printf("%02x",tc_sdls_processed_frame->tc_sec_trailer.mac[z]);
             }
-            OS_printf("\n");
+            printf("\n");
             
             gcry_error = gcry_cipher_gettag(
                 tmp_hd,
@@ -2867,15 +2867,15 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
             }
 
-            OS_printf("Expected MAC = 0x");
+            printf("Expected MAC = 0x");
             for (int z = 0; z < MAC_SIZE; z++)
             {
-                OS_printf("%02x",tc_sdls_processed_frame->tc_sec_trailer.mac[z]);
+                printf("%02x",tc_sdls_processed_frame->tc_sec_trailer.mac[z]);
             }
-            OS_printf("\n");
+            printf("\n");
             status = OS_ERROR;
             report.bmacf = 1;
             #ifdef OCF_DEBUG
@@ -2893,7 +2893,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
     else
     {	// Clear
         #ifdef DEBUG
-            OS_printf(KBLU "CLEAR TC Received!\n" RESET);
+            printf(KBLU "CLEAR TC Received!\n" RESET);
         #endif
 
         for (y = 10; y <= (tc_sdls_processed_frame->tc_header.fl - 2); y++) //tfhdr+seghdr+sechdr=5+1+6=12
@@ -2920,13 +2920,13 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
     {
         // CCSDS Pass-through
         #ifdef DEBUG
-        OS_printf(KGRN "CCSDS Pass-through \n" RESET);
+        printf(KGRN "CCSDS Pass-through \n" RESET);
         #endif
         if (PUS_HDR) {
             for (x = 0; x < (tc_sdls_processed_frame->tc_header.fl - 11); x++) {
                 ingest[x] = tc_sdls_processed_frame->tc_pdu[x];
                 #ifdef CCSDS_DEBUG
-                OS_printf("tc_sdls_processed_frame->tc_pdu[%d] = 0x%02x\n", x, tc_sdls_processed_frame->tc_pdu[x]);
+                printf("tc_sdls_processed_frame->tc_pdu[%d] = 0x%02x\n", x, tc_sdls_processed_frame->tc_pdu[x]);
                 #endif
                 *len_ingest = x;
             }
@@ -2934,7 +2934,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
             for (x = 0; x < (tc_sdls_processed_frame->tc_header.fl); x++) { //with no PUS header, entire PDU is data
                 ingest[x] = tc_sdls_processed_frame->tc_pdu[x];
                 #ifdef CCSDS_DEBUG
-                OS_printf("tc_sdls_processed_frame->tc_pdu[%d] = 0x%02x\n", x, tc_sdls_processed_frame->tc_pdu[x]);
+                printf("tc_sdls_processed_frame->tc_pdu[%d] = 0x%02x\n", x, tc_sdls_processed_frame->tc_pdu[x]);
                 #endif
                 *len_ingest = x;
             }
@@ -2948,7 +2948,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
             // Crypto Lib Application ID
             {
                 #ifdef DEBUG
-                OS_printf(KGRN "Received SDLS command: " RESET);
+                printf(KGRN "Received SDLS command: " RESET);
                 #endif
                 // CCSDS Header
                 sdls_frame.hdr.pvn = (tc_sdls_processed_frame->tc_pdu[0] & 0xE0) >> 5;
@@ -2991,7 +2991,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
         else if (tc_sdls_processed_frame->tc_header.vcid == TC_SDLS_EP_VCID) //TC SDLS PDU with no packet layer
         {
             #ifdef DEBUG
-            OS_printf(KGRN "Received SDLS command: " RESET);
+            printf(KGRN "Received SDLS command: " RESET);
             #endif
             // No Packet HDR or PUS in these frames
             // SDLS TLV PDU
@@ -3022,7 +3022,7 @@ int32 Crypto_TC_ProcessSecurity( char* ingest, int* len_ingest,TC_t* tc_sdls_pro
     #endif
     
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_TC_ProcessSecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_TC_ProcessSecurity END -----\n" RESET);
     #endif
 
     return status;
@@ -3052,7 +3052,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
     CFE_PSP_MemSet(&tempTM, 0, TM_SIZE);
     
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_TM_ApplySecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_TM_ApplySecurity START -----\n" RESET);
     #endif
 
     // Check for idle frame trigger
@@ -3082,7 +3082,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
         // Update TM First Header Pointer
         tm_frame.tm_header.fhp = tm_offset;
         #ifdef TM_DEBUG
-            OS_printf("tm_offset = %d \n", tm_offset);
+            printf("tm_offset = %d \n", tm_offset);
         #endif
     }             
 
@@ -3185,7 +3185,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
             (sa_ptr->ast == 0))
         {
             #ifdef DEBUG
-                OS_printf(KBLU "Creating a TM - CLEAR! \n" RESET);
+                printf(KBLU "Creating a TM - CLEAR! \n" RESET);
             #endif
             // Copy temporary frame to ingest
             CFE_PSP_MemCpy(ingest, tempTM, count);
@@ -3195,25 +3195,25 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
                  (sa_ptr->ast == 1))
         {
             #ifdef DEBUG
-                OS_printf(KBLU "Creating a TM - AUTHENTICATED ENCRYPTION! \n" RESET);
+                printf(KBLU "Creating a TM - AUTHENTICATED ENCRYPTION! \n" RESET);
             #endif
 
             // Copy TM to ingest
             CFE_PSP_MemCpy(ingest, tempTM, pdu_loc);
             
             #ifdef MAC_DEBUG
-                OS_printf("AAD = 0x");
+                printf("AAD = 0x");
             #endif
             // Prepare additional authenticated data
             for (y = 0; y < sa_ptr->abm_len; y++)
             {
                 aad[y] = ingest[y] & sa_ptr->abm[y];
                 #ifdef MAC_DEBUG
-                    OS_printf("%02x", aad[y]);
+                    printf("%02x", aad[y]);
                 #endif
             }
             #ifdef MAC_DEBUG
-                OS_printf("\n");
+                printf("\n");
             #endif
 
             gcry_error = gcry_cipher_open(
@@ -3224,7 +3224,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_open error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -3235,7 +3235,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_setkey error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -3246,7 +3246,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_setiv error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -3259,7 +3259,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_decrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_decrypt error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -3270,7 +3270,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_authenticate error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_authenticate error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
@@ -3281,18 +3281,18 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
             );
             if((gcry_error & GPG_ERR_CODE_MASK) != GPG_ERR_NO_ERROR)
             {
-                OS_printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
+                printf(KRED "ERROR: gcry_cipher_checktag error code %d\n" RESET,gcry_error & GPG_ERR_CODE_MASK);
                 status = OS_ERROR;
                 return status;
             }
 
             #ifdef MAC_DEBUG
-                OS_printf("MAC = 0x");
+                printf("MAC = 0x");
                 for(x = 0; x < MAC_SIZE; x++)
                 {
-                    OS_printf("%02x", (uint8) ingest[x + mac_loc]);
+                    printf("%02x", (uint8) ingest[x + mac_loc]);
                 }
-                OS_printf("\n");
+                printf("\n");
             #endif
 
             // Update OCF
@@ -3312,7 +3312,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
                  (sa_ptr->ast == 1))
         {
             #ifdef DEBUG
-                OS_printf(KBLU "Creating a TM - AUTHENTICATED! \n" RESET);
+                printf(KBLU "Creating a TM - AUTHENTICATED! \n" RESET);
             #endif
             // TODO: Future work. Operationally same as clear.
             CFE_PSP_MemCpy(ingest, tempTM, count);
@@ -3322,7 +3322,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
                  (sa_ptr->ast == 0))
         {
             #ifdef DEBUG
-                OS_printf(KBLU "Creating a TM - ENCRYPTED! \n" RESET);
+                printf(KBLU "Creating a TM - ENCRYPTED! \n" RESET);
             #endif
             // TODO: Future work. Operationally same as clear.
             CFE_PSP_MemCpy(ingest, tempTM, count);
@@ -3333,7 +3333,7 @@ int32 Crypto_TM_ApplySecurity( char* ingest, int* len_ingest)
     #endif	
     
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_TM_ApplySecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_TM_ApplySecurity END -----\n" RESET);
     #endif
 
     *len_ingest = count;
@@ -3346,7 +3346,7 @@ int32 Crypto_TM_ProcessSecurity(char* ingest, int* len_ingest)
     int32 status = OS_SUCCESS;
 
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_TM_ProcessSecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_TM_ProcessSecurity START -----\n" RESET);
     #endif
 
     // TODO: This whole function!
@@ -3354,7 +3354,7 @@ int32 Crypto_TM_ProcessSecurity(char* ingest, int* len_ingest)
     ingest[0] = ingest[0];
 
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_TM_ProcessSecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_TM_ProcessSecurity END -----\n" RESET);
     #endif
 
     return status;
@@ -3366,7 +3366,7 @@ int32 Crypto_AOS_ApplySecurity(char* ingest, int* len_ingest)
     int32 status = OS_SUCCESS;
 
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_AOS_ApplySecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_AOS_ApplySecurity START -----\n" RESET);
     #endif
 
     // TODO: This whole function!
@@ -3374,7 +3374,7 @@ int32 Crypto_AOS_ApplySecurity(char* ingest, int* len_ingest)
     ingest[0] = ingest[0];
 
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_AOS_ApplySecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_AOS_ApplySecurity END -----\n" RESET);
     #endif
 
     return status;
@@ -3386,7 +3386,7 @@ int32 Crypto_AOS_ProcessSecurity(char* ingest, int* len_ingest)
     int32 status = OS_SUCCESS;
 
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_AOS_ProcessSecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_AOS_ProcessSecurity START -----\n" RESET);
     #endif
 
     // TODO: This whole function!
@@ -3394,7 +3394,7 @@ int32 Crypto_AOS_ProcessSecurity(char* ingest, int* len_ingest)
     ingest[0] = ingest[0];
 
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_AOS_ProcessSecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_AOS_ProcessSecurity END -----\n" RESET);
     #endif
 
     return status;
@@ -3406,7 +3406,7 @@ int32 Crypto_ApplySecurity(char* ingest, int* len_ingest)
     int32 status = OS_SUCCESS;
 
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_ApplySecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_ApplySecurity START -----\n" RESET);
     #endif
 
     // TODO: This whole function!
@@ -3414,7 +3414,7 @@ int32 Crypto_ApplySecurity(char* ingest, int* len_ingest)
     ingest[0] = ingest[0];
 
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_ApplySecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_ApplySecurity END -----\n" RESET);
     #endif
 
     return status;
@@ -3426,7 +3426,7 @@ int32 Crypto_ProcessSecurity(char* ingest, int* len_ingest)
     int32 status = OS_SUCCESS;
 
     #ifdef DEBUG
-        OS_printf(KYEL "\n----- Crypto_ProcessSecurity START -----\n" RESET);
+        printf(KYEL "\n----- Crypto_ProcessSecurity START -----\n" RESET);
     #endif
 
     // TODO: This whole function!
@@ -3434,7 +3434,7 @@ int32 Crypto_ProcessSecurity(char* ingest, int* len_ingest)
     ingest[0] = ingest[0];
 
     #ifdef DEBUG
-        OS_printf(KYEL "----- Crypto_ProcessSecurity END -----\n" RESET);
+        printf(KYEL "----- Crypto_ProcessSecurity END -----\n" RESET);
     #endif
 
     return status;
