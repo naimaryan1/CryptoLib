@@ -82,8 +82,10 @@ UTEST(MARIA_DB_CONNECTION_TESTS, TLS_TEST) {
     char* ssl_key = "/etc/pki/tls/private/ammos-server-key.pem";
     char* ssl_ca = "/etc/pki/tls/certs/ammos-ca-bundle.crt";
     char* ssl_capath = "/etc/pki/tls/certs/";
+    uint8_t verify_server = 0;
+    char* client_key_password = NULL;
     /*set configuration params*/
-    status = Crypto_Config_MariaDB(mysql_username, password, mysql_hostname, mysql_database, mysql_port, encrypted_connection, ssl_cert, ssl_key, ssl_ca, ssl_capath);
+    status = Crypto_Config_MariaDB(mysql_username, password, mysql_hostname, mysql_database, mysql_port, encrypted_connection, ssl_cert, ssl_key, ssl_ca, ssl_capath,verify_server,client_key_password);
     ASSERT_EQ(CRYPTO_LIB_SUCCESS, status);
     /*Prepare SADB type from config*/
     status = Crypto_Init_Unit_Test_For_DB();

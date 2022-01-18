@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="CMakeFiles">
+        <df name="3.20.2">
+          <df name="CompilerIdC">
+            <in>CMakeCCompilerId.c</in>
+          </df>
+        </df>
+      </df>
+      <df name="src">
+        <df name="src_cryptography">
+          <df name="src_kmc_crypto_service">
+            <in>base64.c</in>
+            <in>base64url.c</in>
+            <in>cryptography_interface_kmc_crypto_service.template.c</in>
+          </df>
+          <df name="src_libgcrypt">
+            <in>cryptography_interface_libgcrypt.template.c</in>
+          </df>
+        </df>
+        <df name="src_feature_stubs">
+          <df name="cryptography_kmc_stub">
+            <in>cryptography_interface_kmc.stub.c</in>
+          </df>
+          <df name="cryptography_libgcrypt_stub">
+            <in>cryptography_interface_libgcrypt.stub.c</in>
+          </df>
+          <df name="mysql_stub">
+            <in>sadb_routine_mariadb.stub.c</in>
+          </df>
+        </df>
+        <df name="src_main">
+          <in>crypto.c</in>
+          <in>crypto_aos.c</in>
+          <in>crypto_config.c</in>
+          <in>crypto_key_mgmt.c</in>
+          <in>crypto_mc.c</in>
+          <in>crypto_print.c</in>
+          <in>crypto_tc.c</in>
+          <in>crypto_tm.c</in>
+          <in>crypto_user.c</in>
+          <in>sadb_routine.c</in>
+          <in>sadb_routine_inmemory.template.c</in>
+        </df>
+        <df name="src_mysql">
+          <in>sadb_routine_mariadb.template.c</in>
+        </df>
+      </df>
+      <df name="util">
+        <df name="core">
+          <in>shared_util.c</in>
+        </df>
+        <df name="src_util">
+          <in>apply_security.c</in>
+          <in>crypto_sequence.c</in>
+          <in>et_dt_validation.c</in>
+          <in>process_security.c</in>
+          <in>ut_crypto.c</in>
+          <in>ut_crypto_aos.c</in>
+          <in>ut_crypto_config.c</in>
+          <in>ut_crypto_mc.c</in>
+          <in>ut_kmc_crypto.c</in>
+          <in>ut_kmc_crypto_aes_cmac.c</in>
+          <in>ut_mysql_m_tls_connection.c</in>
+          <in>ut_mysql_tls_connection.c</in>
+          <in>ut_tc_apply.c</in>
+        </df>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+        <buildAnalyzer>false</buildAnalyzer>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir></buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir></preBuildCommandWorkingDir>
+          <preBuildCommand>${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=${IDE_CC} -DCMAKE_CXX_COMPILER=${IDE_CXX} -DCMAKE_C_FLAGS_DEBUG="-g3 -gdwarf-2" -DCMAKE_CXX_FLAGS_DEBUG="-g3 -gdwarf-2" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .</preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="CMakeFiles/3.20.2/CompilerIdC/CMakeCCompilerId.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_cryptography/src_kmc_crypto_service/base64.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_cryptography/src_kmc_crypto_service/base64url.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_cryptography/src_kmc_crypto_service/cryptography_interface_kmc_crypto_service.template.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_cryptography/src_libgcrypt/cryptography_interface_libgcrypt.template.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_feature_stubs/cryptography_kmc_stub/cryptography_interface_kmc.stub.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_feature_stubs/cryptography_libgcrypt_stub/cryptography_interface_libgcrypt.stub.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_feature_stubs/mysql_stub/sadb_routine_mariadb.stub.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_main/crypto.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_aos.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_config.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_key_mgmt.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_mc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_print.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_tc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_tm.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/crypto_user.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/sadb_routine.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/src_main/sadb_routine_inmemory.template.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="src/src_mysql/sadb_routine_mariadb.template.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="util/core/shared_util.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/apply_security.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/crypto_sequence.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/et_dt_validation.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/process_security.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/ut_crypto.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/ut_crypto_aos.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/ut_crypto_config.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/ut_crypto_mc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/ut_kmc_crypto.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="util/src_util/ut_kmc_crypto_aes_cmac.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="util/src_util/ut_mysql_m_tls_connection.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="util/src_util/ut_mysql_tls_connection.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="util/src_util/ut_tc_apply.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

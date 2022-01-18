@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name=".github">
+        <df name="workflows">
+        </df>
+      </df>
+      <df name="build">
+        <df name="bin">
+        </df>
+        <df name="lib">
+        </df>
+        <df name="Testing">
+          <df name="Temporary">
+          </df>
+        </df>
+      </df>
+      <df name="CMakeFiles">
+        <df name="3.20.2">
+          <df name="CompilerIdC">
+            <df name="tmp">
+            </df>
+            <in>CMakeCCompilerId.c</in>
+          </df>
+        </df>
+        <df name="CMakeTmp">
+        </df>
+        <df name="Continuous.dir">
+        </df>
+        <df name="ContinuousBuild.dir">
+        </df>
+        <df name="ContinuousConfigure.dir">
+        </df>
+        <df name="ContinuousCoverage.dir">
+        </df>
+        <df name="ContinuousMemCheck.dir">
+        </df>
+        <df name="ContinuousStart.dir">
+        </df>
+        <df name="ContinuousSubmit.dir">
+        </df>
+        <df name="ContinuousTest.dir">
+        </df>
+        <df name="ContinuousUpdate.dir">
+        </df>
+        <df name="Experimental.dir">
+        </df>
+        <df name="ExperimentalBuild.dir">
+        </df>
+        <df name="ExperimentalConfigure.dir">
+        </df>
+        <df name="ExperimentalCoverage.dir">
+        </df>
+        <df name="ExperimentalMemCheck.dir">
+        </df>
+        <df name="ExperimentalStart.dir">
+        </df>
+        <df name="ExperimentalSubmit.dir">
+        </df>
+        <df name="ExperimentalTest.dir">
+        </df>
+        <df name="ExperimentalUpdate.dir">
+        </df>
+        <df name="Nightly.dir">
+        </df>
+        <df name="NightlyBuild.dir">
+        </df>
+        <df name="NightlyConfigure.dir">
+        </df>
+        <df name="NightlyCoverage.dir">
+        </df>
+        <df name="NightlyMemCheck.dir">
+        </df>
+        <df name="NightlyMemoryCheck.dir">
+        </df>
+        <df name="NightlyStart.dir">
+        </df>
+        <df name="NightlySubmit.dir">
+        </df>
+        <df name="NightlyTest.dir">
+        </df>
+        <df name="NightlyUpdate.dir">
+        </df>
+      </df>
+      <df name="include">
+        <in>crypto.h</in>
+        <in>crypto_config.h</in>
+        <in>crypto_config_structs.h</in>
+        <in>crypto_error.h</in>
+        <in>crypto_events.h</in>
+        <in>crypto_print.h</in>
+        <in>crypto_structs.h</in>
+        <in>cryptography_interface.h</in>
+        <in>sadb_routine.h</in>
+      </df>
+      <df name="src">
+        <df name="CMakeFiles">
+          <df name="Crypto.dir">
+            <df name="src_cryptography">
+              <df name="src_libgcrypt">
+              </df>
+            </df>
+            <df name="src_feature_stubs">
+              <df name="cryptography_kmc_stub">
+              </df>
+              <df name="mysql_stub">
+              </df>
+            </df>
+            <df name="src_main">
+            </df>
+            <df name="src_mysql">
+            </df>
+          </df>
+        </df>
+        <df name="crypto_sadb">
+          <df name="sadb_mariadb_admin_scripts">
+          </df>
+        </df>
+        <df name="src_cryptography">
+          <df name="src_kmc_crypto_service">
+            <in>base64.c</in>
+            <in>base64.h</in>
+            <in>base64url.c</in>
+            <in>base64url.h</in>
+            <in>cryptography_interface_kmc_crypto_service.template.c</in>
+            <in>jsmn.h</in>
+          </df>
+          <df name="src_libgcrypt">
+            <in>cryptography_interface_libgcrypt.template.c</in>
+          </df>
+        </df>
+        <df name="src_feature_stubs">
+          <df name="cryptography_kmc_stub">
+            <in>cryptography_interface_kmc.stub.c</in>
+          </df>
+          <df name="cryptography_libgcrypt_stub">
+            <in>cryptography_interface_libgcrypt.stub.c</in>
+          </df>
+          <df name="mysql_stub">
+            <in>sadb_routine_mariadb.stub.c</in>
+          </df>
+        </df>
+        <df name="src_main">
+          <in>crypto.c</in>
+          <in>crypto_aos.c</in>
+          <in>crypto_config.c</in>
+          <in>crypto_key_mgmt.c</in>
+          <in>crypto_mc.c</in>
+          <in>crypto_print.c</in>
+          <in>crypto_tc.c</in>
+          <in>crypto_tm.c</in>
+          <in>crypto_user.c</in>
+          <in>sadb_routine.c</in>
+          <in>sadb_routine_inmemory.template.c</in>
+        </df>
+        <df name="src_mysql">
+          <in>sadb_routine_mariadb.template.c</in>
+        </df>
+      </df>
+      <df name="support">
+        <df name="ansible">
+        </df>
+      </df>
+      <df name="test">
+        <df name="CMakeFiles">
+        </df>
+        <df name="sdls_ep_interop">
+        </df>
+      </df>
+      <df name="Testing">
+        <df name="Temporary">
+        </df>
+      </df>
+      <df name="util">
+        <df name="CMakeFiles">
+          <df name="apply_security.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="crypto_sequence.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="gcov.dir">
+          </df>
+          <df name="process_security.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="scrub.dir">
+          </df>
+          <df name="ut_crypto.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_crypto_aos.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_crypto_config.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_crypto_mc.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_kmc_crypto.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_kmc_crypto_aes_cmac.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_mysql_m_tls_connection.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_mysql_tls_connection.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+          <df name="ut_tc_apply.dir">
+            <df name="core">
+            </df>
+            <df name="src_util">
+            </df>
+          </df>
+        </df>
+        <df name="core">
+          <in>shared_util.c</in>
+        </df>
+        <df name="include">
+          <in>apply_security.h</in>
+          <in>crypto_sequence.h</in>
+          <in>et_dt_validation.h</in>
+          <in>process_security.h</in>
+          <in>shared_util.h</in>
+          <in>ut_crypto.h</in>
+          <in>ut_crypto_aos.h</in>
+          <in>ut_crypto_config.h</in>
+          <in>ut_crypto_mc.h</in>
+          <in>ut_tc_apply.h</in>
+          <in>utest.h</in>
+        </df>
+        <df name="src_util">
+          <in>apply_security.c</in>
+          <in>crypto_sequence.c</in>
+          <in>et_dt_validation.c</in>
+          <in>process_security.c</in>
+          <in>ut_crypto.c</in>
+          <in>ut_crypto_aos.c</in>
+          <in>ut_crypto_config.c</in>
+          <in>ut_crypto_mc.c</in>
+          <in>ut_kmc_crypto.c</in>
+          <in>ut_kmc_crypto_aes_cmac.c</in>
+          <in>ut_mysql_m_tls_connection.c</in>
+          <in>ut_mysql_tls_connection.c</in>
+          <in>ut_tc_apply.c</in>
+        </df>
+      </df>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>.</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

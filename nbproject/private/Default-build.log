@@ -1,0 +1,77 @@
+[  1%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto.c.o
+[  3%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_aos.c.o
+[  5%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_config.c.o
+[  7%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_key_mgmt.c.o
+[  9%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_mc.c.o
+[ 11%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_print.c.o
+[ 13%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_tc.c.o
+[ 15%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_tm.c.o
+[ 17%] Building C object src/CMakeFiles/Crypto.dir/src_main/crypto_user.c.o
+[ 19%] Building C object src/CMakeFiles/Crypto.dir/src_main/sadb_routine.c.o
+[ 21%] Building C object src/CMakeFiles/Crypto.dir/src_main/sadb_routine_inmemory.template.c.o
+[ 23%] Building C object src/CMakeFiles/Crypto.dir/src_feature_stubs/mysql_stub/sadb_routine_mariadb.stub.c.o
+[ 25%] Building C object src/CMakeFiles/Crypto.dir/src_cryptography/src_libgcrypt/cryptography_interface_libgcrypt.template.c.o
+[ 27%] Building C object src/CMakeFiles/Crypto.dir/src_feature_stubs/cryptography_kmc_stub/cryptography_interface_kmc.stub.c.o
+[ 29%] Linking C shared library libCrypto.so
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/lib/libCrypto.so
+[ 29%] Built target Crypto
+[ 31%] Building C object util/CMakeFiles/ut_crypto_config.dir/src_util/ut_crypto_config.c.o
+[ 33%] Building C object util/CMakeFiles/ut_crypto_config.dir/core/shared_util.c.o
+[ 35%] Linking C executable ut_crypto_config
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_crypto_config
+[ 35%] Built target ut_crypto_config
+[ 37%] Building C object util/CMakeFiles/ut_crypto.dir/src_util/ut_crypto.c.o
+[ 39%] Building C object util/CMakeFiles/ut_crypto.dir/core/shared_util.c.o
+[ 41%] Linking C executable ut_crypto
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_crypto
+[ 41%] Built target ut_crypto
+[ 43%] Building C object util/CMakeFiles/ut_crypto_aos.dir/src_util/ut_crypto_aos.c.o
+[ 45%] Building C object util/CMakeFiles/ut_crypto_aos.dir/core/shared_util.c.o
+[ 47%] Linking C executable ut_crypto_aos
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_crypto_aos
+[ 47%] Built target ut_crypto_aos
+[ 49%] Building C object util/CMakeFiles/ut_crypto_mc.dir/src_util/ut_crypto_mc.c.o
+[ 50%] Building C object util/CMakeFiles/ut_crypto_mc.dir/core/shared_util.c.o
+[ 52%] Linking C executable ut_crypto_mc
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_crypto_mc
+[ 52%] Built target ut_crypto_mc
+[ 54%] Building C object util/CMakeFiles/process_security.dir/src_util/process_security.c.o
+[ 56%] Building C object util/CMakeFiles/process_security.dir/core/shared_util.c.o
+[ 58%] Linking C executable process_security
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/process_security
+[ 58%] Built target process_security
+[ 60%] Building C object util/CMakeFiles/apply_security.dir/src_util/apply_security.c.o
+[ 62%] Building C object util/CMakeFiles/apply_security.dir/core/shared_util.c.o
+[ 64%] Linking C executable apply_security
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/apply_security
+[ 64%] Built target apply_security
+[ 66%] Building C object util/CMakeFiles/crypto_sequence.dir/src_util/crypto_sequence.c.o
+[ 68%] Building C object util/CMakeFiles/crypto_sequence.dir/core/shared_util.c.o
+[ 70%] Linking C executable crypto_sequence
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/crypto_sequence
+[ 70%] Built target crypto_sequence
+[ 72%] Building C object util/CMakeFiles/ut_kmc_crypto.dir/src_util/ut_kmc_crypto.c.o
+[ 74%] Building C object util/CMakeFiles/ut_kmc_crypto.dir/core/shared_util.c.o
+[ 76%] Linking C executable ut_kmc_crypto
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_kmc_crypto
+[ 76%] Built target ut_kmc_crypto
+[ 78%] Building C object util/CMakeFiles/ut_mysql_tls_connection.dir/src_util/ut_mysql_tls_connection.c.o
+[ 80%] Building C object util/CMakeFiles/ut_mysql_tls_connection.dir/core/shared_util.c.o
+[ 82%] Linking C executable ut_mysql_tls_connection
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_mysql_tls_connection
+[ 82%] Built target ut_mysql_tls_connection
+[ 84%] Building C object util/CMakeFiles/ut_mysql_m_tls_connection.dir/src_util/ut_mysql_m_tls_connection.c.o
+[ 86%] Building C object util/CMakeFiles/ut_mysql_m_tls_connection.dir/core/shared_util.c.o
+[ 88%] Linking C executable ut_mysql_m_tls_connection
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_mysql_m_tls_connection
+[ 88%] Built target ut_mysql_m_tls_connection
+[ 90%] Building C object util/CMakeFiles/ut_tc_apply.dir/src_util/ut_tc_apply.c.o
+[ 92%] Building C object util/CMakeFiles/ut_tc_apply.dir/core/shared_util.c.o
+[ 94%] Linking C executable ut_tc_apply
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_tc_apply
+[ 94%] Built target ut_tc_apply
+[ 96%] Building C object util/CMakeFiles/ut_kmc_crypto_aes_cmac.dir/src_util/ut_kmc_crypto_aes_cmac.c.o
+[ 98%] Building C object util/CMakeFiles/ut_kmc_crypto_aes_cmac.dir/core/shared_util.c.o
+[100%] Linking C executable ut_kmc_crypto_aes_cmac
+Created /home/anaim/CryptoLib_1_12_2022/CryptoLib/build/bin/ut_kmc_crypto_aes_cmac
+[100%] Built target ut_kmc_crypto_aes_cmac
